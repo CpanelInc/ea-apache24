@@ -24,7 +24,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.62
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 2
+%define release_prefix 3
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -2076,6 +2076,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Mon Dec 02 2024 Dan Muey <daniel.muey@webpros.com> - 2.4.62-3
+- ZC-12397: Drop `isa` from \.mmn\. include for debs
+
 * Fri Jul 26 2024 Julian Brown <julian.brown@cpanel.net> - 2.4.62-2
 - ZC-12009: Proxy FCGI nocanon from SetHandler
 
