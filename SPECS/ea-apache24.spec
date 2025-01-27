@@ -22,9 +22,9 @@
 
 Summary: Apache HTTP Server
 Name: ea-apache24
-Version: 2.4.62
+Version: 2.4.63
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 3
+%define release_prefix 1
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -96,9 +96,6 @@ Patch701: 0018-Update-apxs-to-use-the-correct-path-for-top_builddir.patch
 Patch801: 0019-Add-instructions-to-install-elinks.patch
 
 Patch902: 0020-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
-
-# NOTE: This is a temporary patch until Apache adopts it officiall
-Patch9991:  9991-Proxy-FCGI-nocanon-from-SetHandler.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -1359,10 +1356,6 @@ mod_watchdog hooks.
 %patch801 -p1 -b .instructaboutelinks
 %endif
 
-
-# NOTE: This is a temporary patch until Apache adopts it officiall
-%patch9991 -p1 -b .proxy_fcgi-nocanon
-
 # Patch in the vendor string and the release string
 sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
 sed -i 's/@RELEASE@/%{release}/' server/core.c
@@ -2076,6 +2069,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Fri Jan 24 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.63-1
+- EA-12665: Update ea-apache24 from v2.4.62 to v2.4.63
+- Remove Proxy FCGI patch (upstream patched in v2.5.63)
+
 * Mon Dec 02 2024 Dan Muey <daniel.muey@webpros.com> - 2.4.62-3
 - ZC-12397: Drop `isa` from \.mmn\. include for debs
 
