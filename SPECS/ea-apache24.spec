@@ -21,6 +21,7 @@
 %endif
 
 %if 0%{?rhel} >= 10
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/#_brp_buildroot_policy_scripts
 %global __brp_check_rpaths %{nil}
 %endif
 
@@ -172,7 +173,14 @@ Provides: ea-apache24-mmn = %{oldmmnisa}
 Requires: ea-apache24-tools = %{version}-%{release}
 Requires: ea-apache24-mod_proxy_http
 Requires: ea-apache24-mod_proxy
+
+
+%if 0%{?rhel} == 10
+# ea-cpanel-tools needs cpanel perl which is not yet available on Almalinux 10
+%else
 Requires: ea-cpanel-tools
+%endif
+
 %if 0%{?rhel} < 8
 Requires: elinks
 %endif
@@ -1272,7 +1280,12 @@ BuildRequires: openssl, openssl-devel
 Requires(post): openssl
 %endif
 
+%if 0%{?rhel} >= 10
+Requires(post): /usr/bin/cat
+%else
 Requires(post): /bin/cat
+%endif
+
 Requires(pre): ea-apache24
 Requires: ea-apache24 = 0:%{version}-%{release}, ea-apache24-mmn = %{mmnisa}
 Obsoletes: stronghold-mod_ssl, mod_ssl
