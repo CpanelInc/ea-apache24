@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.63
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 1
+%define release_prefix 2
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -151,6 +151,7 @@ Requires: ea-apache24-config-runtime
 Requires: ea-apache24-mod_bwlimited
 Requires: ea-apache24-mod_proxy_wstunnel
 Requires: ea-apache24-mod_headers
+Requires: ea-apache24-mod_remoteip
 
 Obsoletes: httpd-suexec
 Conflicts: httpd-mmn
@@ -2126,6 +2127,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Thu May 15 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.63-2
+- ZC-12836: Add dep for remote IP module
+
 * Fri Jan 24 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.63-1
 - EA-12665: Update ea-apache24 from v2.4.62 to v2.4.63
 - Remove Proxy FCGI patch (upstream patched in v2.5.63)
