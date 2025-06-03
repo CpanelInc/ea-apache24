@@ -20,11 +20,16 @@
 %global with_http2   0
 %endif
 
+%if 0%{?rhel} >= 10
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/#_brp_buildroot_policy_scripts
+%global __brp_check_rpaths %{nil}
+%endif
+
 Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.63
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 1
+%define release_prefix 2
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -113,10 +118,21 @@ Requires: openssl
 BuildRequires: autoconf, perl, pkgconfig, findutils, xmlto
 BuildRequires: zlib-devel, libselinux-devel, lua-devel
 BuildRequires: ea-apr-devel >= 1.6.3-1, ea-apr-util-devel >= 1.6.1-1
-BuildRequires: pcre-devel >= 5.0
+
+%if 0%{?rhel} >= 10
+BuildRequires: libxml2 libxml2-devel
+BuildRequires: pcre2-devel
+%else
 BuildRequires: ea-libxml2 ea-libxml2-devel
+BuildRequires: pcre-devel >= 5.0
+%endif
+
 %if %{with_http2}
+    %if 0%{?rhel} >= 10
+BuildRequires: nghttp2 libnghttp2
+    %else
 BuildRequires: ea-nghttp2 ea-libnghttp2
+    %endif
 %endif
 
 %if 0%{?rhel} >=7
@@ -135,6 +151,7 @@ Requires: ea-apache24-config-runtime
 Requires: ea-apache24-mod_bwlimited
 Requires: ea-apache24-mod_proxy_wstunnel
 Requires: ea-apache24-mod_headers
+Requires: ea-apache24-mod_remoteip
 
 Obsoletes: httpd-suexec
 Conflicts: httpd-mmn
@@ -157,7 +174,14 @@ Provides: ea-apache24-mmn = %{oldmmnisa}
 Requires: ea-apache24-tools = %{version}-%{release}
 Requires: ea-apache24-mod_proxy_http
 Requires: ea-apache24-mod_proxy
+
+
+%if 0%{?rhel} == 10
+# ea-cpanel-tools needs cpanel perl which is not yet available on Almalinux 10
+%else
 Requires: ea-cpanel-tools
+%endif
+
 %if 0%{?rhel} < 8
 Requires: elinks
 %endif
@@ -199,7 +223,11 @@ also be found at http://httpd.apache.org/docs/2.4/.
 %package -n ea-apache24-mod_http2
 Group: System Environment/Daemons
 Summary: HTTP2 module for Apache HTTP Server
+%if 0%{?rhel} >= 10
+BuildRequires: libnghttp2-devel
+%else
 BuildRequires: ea-libnghttp2-devel
+%endif
 
 %if 0%{?rhel} < 8
 BuildRequires: ea-openssl11 >= %{ea_openssl_ver}, ea-openssl11-devel >= %{ea_openssl_ver}
@@ -210,7 +238,12 @@ BuildRequires: openssl, openssl-devel
 Requires: openssl
 %endif
 
+%if 0%{?rhel} >= 10
+Requires: nghttp2
+%else
 Requires: ea-nghttp2
+%endif
+
 Requires: ea-apache24 = 0:%{version}-%{release}, ea-apache24-mmn = %{mmnisa}
 Conflicts: ea-apache24-mod_mpm_itk, ea-apache24-mod_mpm_prefork
 
@@ -412,8 +445,13 @@ authentication module, such as mod_auth_basic or mod_auth_digest.
 Group: System Environment/Daemons
 Summary: Compress content via Brotli before it is delivered to the client
 Requires: ea-apache24 = 0:%{version}-%{release}, ea-apache24-mmn = %{mmnisa}
+%if 0%{?rhel} >= 10
+Requires: brotli
+BuildRequires: brotli-devel
+%else
 Requires: ea-brotli
 BuildRequires: ea-brotli-devel
+%endif
 
 %description -n ea-apache24-mod_brotli
 The mod_brotli module provides the BROTLI_COMPRESS output filter that allows
@@ -1030,7 +1068,11 @@ Group: System Environment/Daemons
 Summary: HTML and XML content filters for the Apache HTTP Server
 Requires: ea-apache24 = 0:%{version}-%{release}, ea-apache24-mmn = %{mmnisa}
 Requires: ea-apache24-mod_proxy = 0:%{version}-%{release}
+%if 0%{?rhel} >= 10
+BuildRequires: libxml2 libxml2-devel
+%else
 BuildRequires: ea-libxml2 ea-libxml2-devel
+%endif
 Obsoletes: mod_proxy_html
 
 %description -n ea-apache24-mod_proxy_html
@@ -1239,7 +1281,12 @@ BuildRequires: openssl, openssl-devel
 Requires(post): openssl
 %endif
 
+%if 0%{?rhel} >= 10
+Requires(post): /usr/bin/cat
+%else
 Requires(post): /bin/cat
+%endif
+
 Requires(pre): ea-apache24
 Requires: ea-apache24 = 0:%{version}-%{release}, ea-apache24-mmn = %{mmnisa}
 Obsoletes: stronghold-mod_ssl, mod_ssl
@@ -1432,7 +1479,11 @@ export LYNX_PATH=/usr/bin/links
     --enable-ssl --with-ssl \
 %endif
     --enable-ssl-staticlib-deps \
+%if 0%{?rhel} >= 10
+    --with-nghttp2 \
+%else
     --with-nghttp2=/opt/cpanel/nghttp2/ \
+%endif
     --enable-nghttp2-staticlib-deps \
 %else
     --enable-ssl --with-ssl \
@@ -1449,10 +1500,16 @@ export LYNX_PATH=/usr/bin/links
     --enable-authn-alias \
     --enable-imagemap \
     --disable-echo \
-    --with-libxml2=/opt/cpanel/ea-libxml2/include/libxml2 \
-    --disable-v4-mapped \
     --enable-brotli \
+%if 0%{?rhel} >= 10
+    --enable-libxml2 \
+%else
+    --with-libxml2=/opt/cpanel/ea-libxml2/include/libxml2 \
     --with-brotli=/opt/cpanel/ea-brotli \
+%endif
+    --disable-v4-mapped \
+%if 0%{?rhel} >= 10
+%else
     MOD_PROXY_HTML_LDADD="-L/opt/cpanel/ea-libxml2/%{_lib} -R/opt/cpanel/ea-libxml2/%{_lib}" \
     MOD_XML2ENC_LDADD="-L/opt/cpanel/ea-libxml2/%{_lib} -R/opt/cpanel/ea-libxml2/%{_lib}" \
     MOD_BROTLI_LDADD="-L/opt/cpanel/ea-brotli/lib -R/opt/cpanel/ea-brotli/lib" \
@@ -1463,9 +1520,11 @@ export LYNX_PATH=/usr/bin/links
     MOD_HTTP2_LDADD="-L/opt/cpanel/ea-openssl11/%{_lib} -R/opt/cpanel/ea-openssl11/%{_lib}" \
 %endif
 %endif
+%endif
     $*
 
 %if 0%{?rhel} >= 8
+%if 0%{?rhel} < 10
 # This is ugly, very ugly.
 # ZC-6833 was created to eventually come up with a proper solution for these
 # linking issues.
@@ -1475,11 +1534,6 @@ export LYNX_PATH=/usr/bin/links
 # link against the system directory, then -l:libcrypto.so.1.1 I am telling it
 # to link that particular library in.
 
-# I need to prepend this for later "sed"ing
-%if 0%{?rhel} < 8
-echo 'SYS_OPENSSL  = -Wl,-rpath=/opt/cpanel/ea-openssl11/lib -Wl,-rpath-link=/lib64 -L/lib64 -l:libcrypto.so.1.1' > support/Makefile.tmp
-%endif
-
 cat support/Makefile >> support/Makefile.tmp
 cp -f support/Makefile.tmp support/Makefile
 
@@ -1488,6 +1542,7 @@ sed -i '/^.*PROGRAM_LDADD[ \t]*=.*$/ s/$/ $(SYS_OPENSSL)/' support/Makefile
 
 # ab, does it's own thing so I need to do our thing
 sed -i '/^.*$(LT_LDFLAGS) $(ALL_LDFLAGS) -o $@ $(ab_LTFLAGS) $(ab_OBJECTS) $(ab_LDADD).*$/ s/$/ $(SYS_OPENSSL)/' support/Makefile
+%endif
 %endif
 
 make %{?_smp_mflags}
@@ -1820,6 +1875,9 @@ for fd in httpd-dav.conf httpd-default.conf httpd-languages.conf httpd-manual.co
     cp docs/conf/extra/$fd $RPM_BUILD_ROOT/usr/share/doc/ea-apache24/docs/conf/extra/$fd
 done
 
+echo "APACHEMODULES" $RPM_BUILD_ROOT $RPM_BUILD_ROOT/%{_libdir} $RPM_BUILD_ROOT/%{_libdir}/apache2/modules
+ls -ld $RPM_BUILD_ROOT/%{_libdir}/apache2/modules/* || /bin/true
+
 %pre
 %include %{SOURCE46}
 
@@ -2069,6 +2127,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Thu May 15 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.63-2
+- ZC-12836: Add dep for remote IP module
+
 * Fri Jan 24 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.63-1
 - EA-12665: Update ea-apache24 from v2.4.62 to v2.4.63
 - Remove Proxy FCGI patch (upstream patched in v2.5.63)
