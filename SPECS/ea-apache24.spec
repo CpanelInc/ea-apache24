@@ -27,9 +27,9 @@
 
 Summary: Apache HTTP Server
 Name: ea-apache24
-Version: 2.4.63
+Version: 2.4.64
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 2
+%define release_prefix 1
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -70,7 +70,6 @@ Patch5: 0003-Add-cPanel-layout.patch
 
 # Features/functional changes
 Patch24: 0004-Bump-coresize-limit-if-coredumpdirectory-is-configur.patch
-Patch25: 0005-Add-SELinux-support.patch
 Patch27: 0006-Update-Icon-configuration-in-autoindex.conf.patch
 
 Patch30: 0007-Update-CacheMaxExpire-to-have-a-hard-option.patch
@@ -1378,7 +1377,6 @@ mod_watchdog hooks.
 %patch5 -p1 -b .layout
 
 %patch24 -p1 -b .corelimit
-%patch25 -p1 -b .selinux
 %patch27 -p1 -b .icons
 
 %patch30 -p1 -b .cachehardmax
@@ -2127,6 +2125,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Tue Jul 15 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-1
+- EA-13014: Update ea-apache24 from v2.4.63 to v2.4.64
+
 * Thu May 15 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.63-2
 - ZC-12836: Add dep for remote IP module
 
