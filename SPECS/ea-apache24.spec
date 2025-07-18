@@ -33,7 +33,7 @@ Version: 2.4.64
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
-Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
+Source0: http://www.apache.org/dist/httpd/httpd-2.4.63.tar.bz2
 Source1: centos-noindex.tar.gz
 Source3: httpd.sysconf
 Source5: apache2.tmpfiles
@@ -1372,7 +1372,7 @@ to periodically run tasks. These modules can register handlers for
 mod_watchdog hooks.
 
 %prep
-%setup -q -n httpd-%{version}
+%setup -q -n httpd-2.4.63
 %patch1 -p1 -b .apctl
 %patch3 -p1 -b .deplibs
 %patch5 -p1 -b .layout
