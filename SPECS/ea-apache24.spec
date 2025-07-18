@@ -29,11 +29,11 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.64
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 2
+%define release_prefix 3
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
-Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
+Source0: http://www.apache.org/dist/httpd/httpd-2.4.63.tar.bz2
 Source1: centos-noindex.tar.gz
 Source3: httpd.sysconf
 Source5: apache2.tmpfiles
@@ -70,6 +70,7 @@ Patch5: 0003-Add-cPanel-layout.patch
 
 # Features/functional changes
 Patch24: 0004-Bump-coresize-limit-if-coredumpdirectory-is-configur.patch
+Patch25: 0005-Add-SELinux-support.patch
 Patch27: 0006-Update-Icon-configuration-in-autoindex.conf.patch
 
 Patch30: 0007-Update-CacheMaxExpire-to-have-a-hard-option.patch
@@ -100,8 +101,6 @@ Patch701: 0018-Update-apxs-to-use-the-correct-path-for-top_builddir.patch
 Patch801: 0019-Add-instructions-to-install-elinks.patch
 
 Patch902: 0020-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
-
-Patch999: ssl_engine_sni.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -1373,12 +1372,13 @@ to periodically run tasks. These modules can register handlers for
 mod_watchdog hooks.
 
 %prep
-%setup -q -n httpd-%{version}
+%setup -q -n httpd-2.4.63
 %patch1 -p1 -b .apctl
 %patch3 -p1 -b .deplibs
 %patch5 -p1 -b .layout
 
 %patch24 -p1 -b .corelimit
+%patch25 -p1 -b .selinux
 %patch27 -p1 -b .icons
 
 %patch30 -p1 -b .cachehardmax
@@ -1402,8 +1402,6 @@ mod_watchdog hooks.
 %if 0%{?rhel} >= 8
 %patch801 -p1 -b .instructaboutelinks
 %endif
-
-%patch999 -p1 -b .snipatch
 
 # Patch in the vendor string and the release string
 sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
@@ -2129,6 +2127,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Fri Jul 18 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-3
+- EA-13041: Rolling “ea-apache24” back to “35b37d6c7295199c5157c68145f220d9fa61ff02”: Apache v2.4.64 broke SNI (rando 421)
+
 * Fri Jul 18 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.64-2
 - EA-13040: Revert SNI update to address proxy issues with SNI 421 Redirects
 
