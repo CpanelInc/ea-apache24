@@ -1399,6 +1399,8 @@ mod_watchdog hooks.
 
 %patch701 -p1 -b .apxsfixtopbuilddir
 
+%patch999 -p1 -b .snifixpatch
+
 %if 0%{?rhel} >= 8
 %patch801 -p1 -b .instructaboutelinks
 %endif
@@ -2131,6 +2133,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Fri Jul 18 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.64-2
 - EA-13040: Revert SNI update to address proxy issues with SNI 421 Redirects
+
 
 * Tue Jul 15 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-1
 - EA-13014: Update ea-apache24 from v2.4.63 to v2.4.64
