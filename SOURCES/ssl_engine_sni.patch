@@ -1,5 +1,5 @@
---- modules/ssl/ssl_engine_kernel.c.old	2025-07-18 09:36:54.409205585 -0500
-+++ modules/ssl/ssl_engine_kernel.c	2025-07-18 09:59:17.110400342 -0500
+--- a/modules/ssl/ssl_engine_kernel.c	2025-07-18 09:36:54.409205585 -0500
++++ b/modules/ssl/ssl_engine_kernel.c	2025-07-18 09:59:17.110400342 -0500
 @@ -296,6 +296,20 @@
                  return HTTP_BAD_REQUEST;
              }

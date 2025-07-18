@@ -1405,6 +1405,8 @@ mod_watchdog hooks.
 %patch801 -p1 -b .instructaboutelinks
 %endif
 
+%patch999 -p1 -b .snipatch
+
 # Patch in the vendor string and the release string
 sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
 sed -i 's/@RELEASE@/%{release}/' server/core.c
@@ -2130,7 +2132,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Fri Jul 18 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.64-2
-- EA-13040: Update SNI revert to address 421 Redirect errors.
+- EA-13040: Revert SNI update to address proxy issues with SNI 421 Redirects
+
 
 * Tue Jul 15 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-1
 - EA-13014: Update ea-apache24 from v2.4.63 to v2.4.64
