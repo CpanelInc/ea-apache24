@@ -1399,8 +1399,6 @@ mod_watchdog hooks.
 
 %patch701 -p1 -b .apxsfixtopbuilddir
 
-%patch999 -p1 -b .snifixpatch
-
 %if 0%{?rhel} >= 8
 %patch801 -p1 -b .instructaboutelinks
 %endif
