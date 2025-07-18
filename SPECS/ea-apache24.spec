@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.64
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 1
+%define release_prefix 2
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -100,6 +100,8 @@ Patch701: 0018-Update-apxs-to-use-the-correct-path-for-top_builddir.patch
 Patch801: 0019-Add-instructions-to-install-elinks.patch
 
 Patch902: 0020-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
+
+Patch999: ssl_engine_sni.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -1401,6 +1403,8 @@ mod_watchdog hooks.
 %patch801 -p1 -b .instructaboutelinks
 %endif
 
+%patch999 -p1 -b .snipatch
+
 # Patch in the vendor string and the release string
 sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
 sed -i 's/@RELEASE@/%{release}/' server/core.c
@@ -2125,6 +2129,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Fri Jul 18 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.64-2
+- EA-13040: Revert SNI update to address proxy issues with SNI 421 Redirects
+
 * Tue Jul 15 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-1
 - EA-13014: Update ea-apache24 from v2.4.63 to v2.4.64
 
