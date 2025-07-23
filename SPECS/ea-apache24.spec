@@ -70,7 +70,6 @@ Patch5: 0003-Add-cPanel-layout.patch
 
 # Features/functional changes
 Patch24: 0004-Bump-coresize-limit-if-coredumpdirectory-is-configur.patch
-Patch25: 0005-Add-SELinux-support.patch
 Patch27: 0006-Update-Icon-configuration-in-autoindex.conf.patch
 
 Patch30: 0007-Update-CacheMaxExpire-to-have-a-hard-option.patch
@@ -1378,7 +1377,6 @@ mod_watchdog hooks.
 %patch5 -p1 -b .layout
 
 %patch24 -p1 -b .corelimit
-%patch25 -p1 -b .selinux
 %patch27 -p1 -b .icons
 
 %patch30 -p1 -b .cachehardmax
