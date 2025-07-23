@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:44:16 -0500
-Subject: [PATCH 09/20] Update suexec to allow "trusted scripts"
+Subject: [PATCH 08/19] Update suexec to allow "trusted scripts"
 
 ---
  support/suexec.c | 25 ++++++++++++++++++++++---

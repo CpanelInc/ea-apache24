@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Julian Brown <julian.brown@cpanel.net>
 Date: Tue, 9 Jun 2020 13:07:33 -0500
-Subject: [PATCH 19/20] Add instructions to install elinks.
+Subject: [PATCH 18/19] Add instructions to install elinks.
 
 ---
  support/apachectl.in | 3 +++

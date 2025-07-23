@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Rishwanth Yeddula <rish@cpanel.net>
 Date: Tue, 26 Mar 2019 13:52:34 -0500
-Subject: [PATCH 16/20] Ensure that Paths configured as Aliases are exempt from
+Subject: [PATCH 15/19] Ensure that Paths configured as Aliases are exempt from
  the symlink protection checks.
 
 Case CPANEL-22257: Paths that are configured via the "Alias" directive
@@ -29,10 +29,10 @@ index 35eca74..bdd0980 100644
              if (found) {
                  *status = alias->redir_status;
 diff --git a/server/core.c b/server/core.c
-index d889e72..434e9d0 100644
+index 2d63705..3c55570 100644
 --- a/server/core.c
 +++ b/server/core.c
-@@ -5064,8 +5064,9 @@ static int default_handler(request_rec *r)
+@@ -5061,8 +5061,9 @@ static int default_handler(request_rec *r)
                  return HTTP_NOT_FOUND;
              }
  

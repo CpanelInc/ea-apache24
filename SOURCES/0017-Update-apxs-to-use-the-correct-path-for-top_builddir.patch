@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Tim Mullin <tim@cpanel.net>
 Date: Wed, 1 Apr 2020 12:38:04 -0500
-Subject: [PATCH 18/20] Update apxs to use the correct path for top_builddir
+Subject: [PATCH 17/19] Update apxs to use the correct path for top_builddir
 
 ---
  support/apxs.in | 4 +++-
