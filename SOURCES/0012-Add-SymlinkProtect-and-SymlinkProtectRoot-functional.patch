@@ -1,8 +1,13 @@
-commit 3f492faebd3e8844cc104c7ad08fccebf324ba61
-Author: Dan Muey <daniel.muey@webpros.com>
-Date:   Tue Jul 15 19:54:35 2025 +0000
+From c748f282ae4832b6c75f63e7cc2d7ca6af16a257 Mon Sep 17 00:00:00 2001
+From: Dan Muey <daniel.muey@webpros.com>
+Date: Wed, 23 Jul 2025 15:57:38 +0000
+Subject: [PATCH] 0012-Add-SymlinkProtect-and-SymlinkProtectRoot-functional
 
-    Add SymlinkProtect and SymlinkProtectRoot functionality
+---
+ include/http_core.h           |  10 +++-
+ modules/mappers/mod_userdir.c |  31 +++++++---
+ server/core.c                 | 103 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 134 insertions(+), 10 deletions(-)
 
 diff --git a/include/http_core.h b/include/http_core.h
 index 9fb9f51..4d756d3 100644
@@ -291,3 +296,6 @@ index dec4975..bf50273 100644
          ap_update_mtime(r, r->finfo.mtime);
          ap_set_last_modified(r);
          ap_set_etag_fd(r, fd);
+-- 
+2.48.1
+
