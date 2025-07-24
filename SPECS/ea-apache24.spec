@@ -151,6 +151,7 @@ Requires: ea-apache24-mod_bwlimited
 Requires: ea-apache24-mod_proxy_wstunnel
 Requires: ea-apache24-mod_headers
 Requires: ea-apache24-mod_remoteip
+Requires: ea-apache24-exec_code_asuser
 
 Obsoletes: httpd-suexec
 Conflicts: httpd-mmn
@@ -2127,6 +2128,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Wed Jul 23 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.65-1
 - EA-13044: Update ea-apache24 from v2.4.64 to v2.4.65
+- EA4-38: Ensure Apache executes code as the user instead of nobody
 
 * Fri Jul 18 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-3
 - EA-13041: Rolling “ea-apache24” back to “35b37d6c7295199c5157c68145f220d9fa61ff02”: Apache v2.4.64 broke SNI (rando 421)
