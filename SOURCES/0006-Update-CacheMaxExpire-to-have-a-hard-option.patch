@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:34:24 -0500
-Subject: [PATCH 07/20] Update CacheMaxExpire to have a "hard" option
+Subject: [PATCH 06/19] Update CacheMaxExpire to have a "hard" option
 
 ---
  modules/cache/cache_util.h |  3 +++

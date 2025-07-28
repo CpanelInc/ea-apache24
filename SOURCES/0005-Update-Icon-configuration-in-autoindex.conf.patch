@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:31:51 -0500
-Subject: [PATCH 06/20] Update Icon configuration in autoindex.conf
+Subject: [PATCH 05/19] Update Icon configuration in autoindex.conf
 
 ---
  docs/conf/extra/httpd-autoindex.conf.in | 4 ++--

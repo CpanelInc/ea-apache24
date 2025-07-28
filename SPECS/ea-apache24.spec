@@ -27,13 +27,13 @@
 
 Summary: Apache HTTP Server
 Name: ea-apache24
-Version: 2.4.64
+Version: 2.4.65
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 3
+%define release_prefix 1
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
-Source0: http://www.apache.org/dist/httpd/httpd-2.4.63.tar.bz2
+Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
 Source1: centos-noindex.tar.gz
 Source3: httpd.sysconf
 Source5: apache2.tmpfiles
@@ -1371,7 +1371,7 @@ to periodically run tasks. These modules can register handlers for
 mod_watchdog hooks.
 
 %prep
-%setup -q -n httpd-2.4.63
+%setup -q -n httpd-%{version}
 %patch1 -p1 -b .apctl
 %patch3 -p1 -b .deplibs
 %patch5 -p1 -b .layout
@@ -2125,6 +2125,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Wed Jul 23 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.65-1
+- EA-13044: Update ea-apache24 from v2.4.64 to v2.4.65
+
 * Fri Jul 18 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-3
 - EA-13041: Rolling “ea-apache24” back to “35b37d6c7295199c5157c68145f220d9fa61ff02”: Apache v2.4.64 broke SNI (rando 421)
 
