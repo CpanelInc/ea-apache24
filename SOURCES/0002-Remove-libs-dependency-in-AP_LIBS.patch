@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:13:26 -0500
-Subject: [PATCH 02/20] Remove --libs dependency in AP_LIBS
+Subject: [PATCH 02/19] Remove --libs dependency in AP_LIBS
 
 ---
  configure.in | 4 ++--

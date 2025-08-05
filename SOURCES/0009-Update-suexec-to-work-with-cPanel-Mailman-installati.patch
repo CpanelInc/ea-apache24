@@ -1,0 +1,155 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Cory McIntire <cory@cpanel.net>
+Date: Thu, 12 Jul 2018 15:45:12 -0500
+Subject: [PATCH 09/19] Update suexec to work with cPanel Mailman installations
+
+---
+ support/suexec.c | 77 ++++++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 61 insertions(+), 16 deletions(-)
+
+diff --git a/support/suexec.c b/support/suexec.c
+index 9c6a674..ab200fb 100644
+--- a/support/suexec.c
++++ b/support/suexec.c
+@@ -270,8 +270,11 @@ static void clean_env(void)
+ int main(int argc, char *argv[])
+ {
+     int userdir = 0;        /* ~userdir flag             */
++    int mailman = 0;        /* mailman path              */
+     uid_t uid;              /* user information          */
++    uid_t httpuid;          /* http user                */
+     gid_t gid;              /* target group placeholder  */
++    gid_t httpgid;          /* http group                */
+     char *target_uname;     /* target user name          */
+     char *target_gname;     /* target group name         */
+     char *target_homedir;   /* target home directory     */
+@@ -294,7 +297,8 @@ int main(int argc, char *argv[])
+      * Check existence/validity of the UID of the user
+      * running this program.  Error out if invalid.
+      */
+-    uid = getuid();
++    uid = httpuid = getuid();
++    httpgid = getgid();
+     if ((pw = getpwuid(uid)) == NULL) {
+         log_err("crit: invalid uid: (%lu)\n", (unsigned long)uid);
+         exit(102);
+@@ -393,6 +397,20 @@ int main(int argc, char *argv[])
+         userdir = 1;
+     }
+ 
++    /*
++     * Check for mailman
++     */
++    if (getcwd(cwd, AP_MAXPATH) == NULL) {
++       log_err("emerg: cannot get current working directory\n");
++       exit(111);
++    }
++
++    if ((strncmp(cwd, "/usr/local/cpanel/3rdparty/mailman/cgi-bin", 42)) == 0) {
++        mailman = 1;
++        target_uname = "mailman";
++        target_gname = "mailman";
++    }
++
+     /*
+      * Error out if the target username is invalid.
+      */
+@@ -482,7 +500,7 @@ int main(int argc, char *argv[])
+      * a UID less than AP_UID_MIN.  Tsk tsk.
+      */
+     if ((uid == 0) || (uid < AP_UID_MIN)) {
+-        log_err("cannot run as forbidden uid (%lu/%s)\n", (unsigned long)uid, cmd);
++        log_err("cannot run as forbidden uid (%u/%s)\n", uid, cmd);
+         exit(107);
+     }
+ 
+@@ -491,7 +509,7 @@ int main(int argc, char *argv[])
+      * or as a GID less than AP_GID_MIN.  Tsk tsk.
+      */
+     if ((gid == 0) || (gid < AP_GID_MIN)) {
+-        log_err("cannot run as forbidden gid (%lu/%s)\n", (unsigned long)gid, cmd);
++        log_err("cannot run as forbidden gid (%u/%s)\n", gid, cmd);
+         exit(108);
+     }
+ 
+@@ -501,19 +519,36 @@ int main(int argc, char *argv[])
+      * Initialize the group access list for the target user,
+      * and setgid() to the target group. If unsuccessful, error out.
+      */
+-    if (((setgid(gid)) != 0) || (initgroups(actual_uname, gid) != 0)) {
+-        log_err("failed to setgid/initgroups (%lu: %s): %s\n",
+-                (unsigned long)gid, cmd, strerror(errno));
+-        exit(109);
++    if (mailman) {
++        /*
++         * Mailman runs with the permissions of the webserver as if suexec
++         * was not turned on.  We need all the uid/gid validation to happen
++         * for the mailman user, but we want to run as the webserver user.
++         */
++        if (((setgid(httpgid)) != 0) || (initgroups(AP_HTTPD_USER, httpgid) != 0)) {
++            log_err("failed to setgid (%u: %s)\n", httpgid, cmd);
++            exit(109);
++        }
++
++        if ((setuid(httpuid)) != 0) {
++            log_err("failed to setuid (%u: %s)\n", uid, cmd);
++            exit(110);
++        }
+     }
++    else {
+ 
+-    /*
+-     * setuid() to the target user.  Error out on fail.
+-     */
+-    if ((setuid(uid)) != 0) {
+-        log_err("failed to setuid (%lu: %s): %s\n",
+-                (unsigned long)uid, cmd, strerror(errno));
+-        exit(110);
++        if (((setgid(gid)) != 0) || (initgroups(actual_uname, gid) != 0)) {
++            log_err("failed to setgid (%u: %s)\n", gid, cmd);
++            exit(109);
++        }
++
++        /*
++         * setuid() to the target user.  Error out on fail.
++         */
++        if ((setuid(uid)) != 0) {
++            log_err("failed to setuid (%u: %s)\n", uid, cmd);
++            exit(110);
++        }
+     }
+ 
+     /*
+@@ -563,7 +598,7 @@ int main(int argc, char *argv[])
+     /*
+      * Error out if cwd is writable by others.
+      */
+-    if ((dir_info.st_mode & S_IWOTH) || (dir_info.st_mode & S_IWGRP)) {
++    if ((dir_info.st_mode & S_IWOTH) || ((dir_info.st_mode & S_IWGRP) && !mailman)) {
+         log_err("directory is writable by others: (%s)\n", cwd);
+         exit(116);
+     }
+@@ -586,12 +621,22 @@ int main(int argc, char *argv[])
+ 
+     /*
+      * Error out if the file is setuid or setgid.
++     * SETUID target executables are only allowed for mailman.
+      */
+-    if ((prg_info.st_mode & S_ISUID) || (prg_info.st_mode & S_ISGID)) {
++    if ((prg_info.st_mode & S_ISUID) && !mailman) {
+         log_err("file is either setuid or setgid: (%s/%s)\n", cwd, cmd);
+         exit(119);
+     }
+ 
++    /*
++     * SETGID target executables are only allowed for mailman.
++     * The verification that the group is actually mailman happens
++     * in the next if block
++     */
++    if ((prg_info.st_mode & S_ISGID) && !mailman) {
++        log_err("file is either setuid or setgid: (%s/%s)\n", cwd, cmd);
++        exit(119);
++    }
+     /*
+      * Error out if the target name/group is different from
+      * the name/group of the cwd or the program.

@@ -27,13 +27,13 @@
 
 Summary: Apache HTTP Server
 Name: ea-apache24
-Version: 2.4.64
+Version: 2.4.65
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 3
+%define release_prefix 1
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
-Source0: http://www.apache.org/dist/httpd/httpd-2.4.63.tar.bz2
+Source0: http://www.apache.org/dist/httpd/httpd-%{version}.tar.bz2
 Source1: centos-noindex.tar.gz
 Source3: httpd.sysconf
 Source5: apache2.tmpfiles
@@ -70,37 +70,36 @@ Patch5: 0003-Add-cPanel-layout.patch
 
 # Features/functional changes
 Patch24: 0004-Bump-coresize-limit-if-coredumpdirectory-is-configur.patch
-Patch25: 0005-Add-SELinux-support.patch
-Patch27: 0006-Update-Icon-configuration-in-autoindex.conf.patch
+Patch27: 0005-Update-Icon-configuration-in-autoindex.conf.patch
 
-Patch30: 0007-Update-CacheMaxExpire-to-have-a-hard-option.patch
+Patch30: 0006-Update-CacheMaxExpire-to-have-a-hard-option.patch
 
 # Bug fixes
 
 # cPanel-specific patches
-Patch301: 0008-Update-Apachectl-to-reference-cpanel.config-Addition.patch
-Patch302: 0009-Update-suexec-to-allow-trusted-scripts.patch
-Patch303: 0010-Update-suexec-to-work-with-cPanel-Mailman-installati.patch
-Patch304: 0011-Update-suexec-to-allow-execution-for-httpusergroup-m.patch
-Patch305: 0012-Update-apxs-to-automatically-generate-module-conf-fi.patch
-Patch306: 0013-Add-SymlinkProtect-and-SymlinkProtectRoot-functional.patch
+Patch301: 0007-Update-Apachectl-to-reference-cpanel.config-Addition.patch
+Patch302: 0008-Update-suexec-to-allow-trusted-scripts.patch
+Patch303: 0009-Update-suexec-to-work-with-cPanel-Mailman-installati.patch
+Patch304: 0010-Update-suexec-to-allow-execution-for-httpusergroup-m.patch
+Patch305: 0011-Update-apxs-to-automatically-generate-module-conf-fi.patch
+Patch306: 0012-Add-SymlinkProtect-and-SymlinkProtectRoot-functional.patch
 
 # cPanel Performance Patches
-Patch401: 0014-Increase-random-seed-size.patch
-Patch403: 0015-Downgrade-loglevel-for-long-lost-pid-warnings.patch
+Patch401: 0013-Increase-random-seed-size.patch
+Patch403: 0014-Downgrade-loglevel-for-long-lost-pid-warnings.patch
 
 # cPanel Security Patches
-# removed: fixed upstream Patch500: 0017-Apply-mod_ratelimit-fix-from-trunk.patch
-Patch500: 0016-Ensure-that-Paths-configured-as-Aliases-are-exempt-f.patch
+# removed: fixed upstream Patch500: 0016-Apply-mod_ratelimit-fix-from-trunk.patch
+Patch500: 0015-Ensure-that-Paths-configured-as-Aliases-are-exempt-f.patch
 
 # Performance Patches
-Patch601: 0017-Optimize-finding-a-module.-ap_find_linked_module-was.patch
+Patch601: 0016-Optimize-finding-a-module.-ap_find_linked_module-was.patch
 
-Patch701: 0018-Update-apxs-to-use-the-correct-path-for-top_builddir.patch
+Patch701: 0017-Update-apxs-to-use-the-correct-path-for-top_builddir.patch
 
-Patch801: 0019-Add-instructions-to-install-elinks.patch
+Patch801: 0018-Add-instructions-to-install-elinks.patch
 
-Patch902: 0020-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
+Patch902: 0019-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -1372,13 +1371,12 @@ to periodically run tasks. These modules can register handlers for
 mod_watchdog hooks.
 
 %prep
-%setup -q -n httpd-2.4.63
+%setup -q -n httpd-%{version}
 %patch1 -p1 -b .apctl
 %patch3 -p1 -b .deplibs
 %patch5 -p1 -b .layout
 
 %patch24 -p1 -b .corelimit
-%patch25 -p1 -b .selinux
 %patch27 -p1 -b .icons
 
 %patch30 -p1 -b .cachehardmax
@@ -2127,6 +2125,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Wed Jul 23 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.65-1
+- EA-13044: Update ea-apache24 from v2.4.64 to v2.4.65
+
 * Fri Jul 18 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.64-3
 - EA-13041: Rolling “ea-apache24” back to “35b37d6c7295199c5157c68145f220d9fa61ff02”: Apache v2.4.64 broke SNI (rando 421)
 
@@ -2386,7 +2387,7 @@ rm -rf $RPM_BUILD_ROOT
 
 * Fri Sep 28 2018 Cory McIntire <cory@cpanel.net> - 2.4.35-1
 - EA-7871: Update to v2.4.35, drop v2.4.34
-  Remove Patch500: 0017-Apply-mod_ratelimit-fix-from-trunk.patch as it
+  Remove Patch500: 0016-Apply-mod_ratelimit-fix-from-trunk.patch as it
   was implemented upstream.
 
 * Fri Aug 24 2018 Rishwanth Yeddula <rish@cpanel.net> - 2.4.34-3

@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Gary Stanley <gary@cpanel.net>
+Date: Sun, 31 Oct 2021 00:45:27 +0000
+Subject: [PATCH 19/19] Change "Accept mutex:" from DEBUG to INFO so techs can
+ help debug servers with apache issues, such as what was described in EA-8508
+
+Before, you needed to configure loglevel to DEBUG to see this message;
+
+[Sat Oct 30 19:38:55.486572 2021] [mpm_worker:debug] [pid 31538:tid 47437702812736] worker.c(1764): AH00294: Accept mutex: sysvsem (default: sysvsem)
+[Sat Oct 30 19:43:02.714539 2021] [mpm_worker:debug] [pid 32090:tid 140710093383808] worker.c(1764): AH00294: Accept mutex: pthread (default: sysvsem)
+[Sat Oct 30 19:43:10.020112 2021] [mpm_worker:debug] [pid 32090:tid 140710093383808] worker.c(1764): AH00294: Accept mutex: pthread (default: sysvsem)
+[Sat Oct 30 19:44:27.077104 2021] [mpm_worker:debug] [pid 399:tid 47788200252480] worker.c(1764): AH00294: Accept mutex: pthread (default: sysvsem)
+[Sat Oct 30 19:49:38.245850 2021] [mpm_worker:debug] [pid 1134:tid 47007251477568] worker.c(1764): AH00294: Accept mutex: pthread (default: sysvsem)
+
+Now it shows up under INFO.
+---
+ server/mpm/prefork/prefork.c | 2 +-
+ server/mpm/worker/worker.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/server/mpm/prefork/prefork.c b/server/mpm/prefork/prefork.c
+index 057472e..ed9ed3b 100644
+--- a/server/mpm/prefork/prefork.c
++++ b/server/mpm/prefork/prefork.c
+@@ -967,7 +967,7 @@ static int prefork_run(apr_pool_t *_pconf, apr_pool_t *plog, server_rec *s)
+                 "Server built: %s", ap_get_server_built());
+     ap_log_command_line(plog, s);
+     ap_log_mpm_common(s);
+-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(00165)
++    ap_log_error(APLOG_MARK, APLOG_INFO, 0, ap_server_conf, APLOGNO(00165)
+                 "Accept mutex: %s (default: %s)",
+                 (all_buckets[0].mutex)
+                     ? apr_proc_mutex_name(all_buckets[0].mutex)
+diff --git a/server/mpm/worker/worker.c b/server/mpm/worker/worker.c
+index 81eb1a9..794af12 100644
+--- a/server/mpm/worker/worker.c
++++ b/server/mpm/worker/worker.c
+@@ -1814,7 +1814,7 @@ static int worker_run(apr_pool_t *_pconf, apr_pool_t *plog, server_rec *s)
+                 "Server built: %s", ap_get_server_built());
+     ap_log_command_line(plog, s);
+     ap_log_mpm_common(s);
+-    ap_log_error(APLOG_MARK, APLOG_DEBUG, 0, ap_server_conf, APLOGNO(00294)
++    ap_log_error(APLOG_MARK, APLOG_INFO, 0, ap_server_conf, APLOGNO(00294)
+                 "Accept mutex: %s (default: %s)",
+                 (all_buckets[0].mutex)
+                     ? apr_proc_mutex_name(all_buckets[0].mutex)
