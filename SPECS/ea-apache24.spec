@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.65
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 1
+%define release_prefix 3
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -2125,6 +2125,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Fri Aug 08 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.65-3
+- EA4-90: Update to 65 proper
+
+* Thu Aug 07 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.65-2
+-- EA4-82: Update 421 workaround to 65 in prep for Monday update
+
 * Wed Jul 23 2025 Dan Muey <daniel.muey@webpros.com> - 2.4.65-1
 - EA-13044: Update ea-apache24 from v2.4.64 to v2.4.65
 
