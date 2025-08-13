@@ -1310,6 +1310,7 @@ Summary: Per-user/group execution module for the Apache HTTP Server
 Requires: ea-apache24 = 0:%{version}-%{release}, ea-apache24-mmn = %{mmnisa}
 Provides: ea-apache24-exec_code_asuser
 Conflicts: ea-apache24-exec_code_asuser
+Conflicts: ea-apache24-mod_itk ea-apache24-mod_ruid2
 
 %description -n ea-apache24-mod_suexec
 The mod_suexec module allows CGI scripts to run as a specified user
