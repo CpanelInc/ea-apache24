@@ -7,10 +7,10 @@ Subject: [PATCH 02/19] Remove --libs dependency in AP_LIBS
  configure.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/configure.in b/configure.in
-index d2a009d..af38141 100644
---- a/configure.in
-+++ b/configure.in
+Index: httpd-2.4.66/configure.in
+===================================================================
+--- httpd-2.4.66.orig/configure.in
++++ httpd-2.4.66/configure.in
 @@ -842,9 +842,9 @@ APACHE_SUBST(INSTALL_SUEXEC)
  
  dnl APR should go after the other libs, so the right symbols can be picked up

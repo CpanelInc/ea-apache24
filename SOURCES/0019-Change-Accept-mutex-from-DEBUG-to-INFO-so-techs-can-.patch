@@ -18,11 +18,11 @@ Now it shows up under INFO.
  server/mpm/worker/worker.c   | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/server/mpm/prefork/prefork.c b/server/mpm/prefork/prefork.c
-index 057472e..ed9ed3b 100644
---- a/server/mpm/prefork/prefork.c
-+++ b/server/mpm/prefork/prefork.c
-@@ -967,7 +967,7 @@ static int prefork_run(apr_pool_t *_pconf, apr_pool_t *plog, server_rec *s)
+Index: httpd-2.4.66/server/mpm/prefork/prefork.c
+===================================================================
+--- httpd-2.4.66.orig/server/mpm/prefork/prefork.c
++++ httpd-2.4.66/server/mpm/prefork/prefork.c
+@@ -967,7 +967,7 @@ static int prefork_run(apr_pool_t *_pcon
                  "Server built: %s", ap_get_server_built());
      ap_log_command_line(plog, s);
      ap_log_mpm_common(s);
@@ -31,11 +31,11 @@ index 057472e..ed9ed3b 100644
                  "Accept mutex: %s (default: %s)",
                  (all_buckets[0].mutex)
                      ? apr_proc_mutex_name(all_buckets[0].mutex)
-diff --git a/server/mpm/worker/worker.c b/server/mpm/worker/worker.c
-index 81eb1a9..794af12 100644
---- a/server/mpm/worker/worker.c
-+++ b/server/mpm/worker/worker.c
-@@ -1814,7 +1814,7 @@ static int worker_run(apr_pool_t *_pconf, apr_pool_t *plog, server_rec *s)
+Index: httpd-2.4.66/server/mpm/worker/worker.c
+===================================================================
+--- httpd-2.4.66.orig/server/mpm/worker/worker.c
++++ httpd-2.4.66/server/mpm/worker/worker.c
+@@ -1814,7 +1814,7 @@ static int worker_run(apr_pool_t *_pconf
                  "Server built: %s", ap_get_server_built());
      ap_log_command_line(plog, s);
      ap_log_mpm_common(s);

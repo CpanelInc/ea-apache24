@@ -7,10 +7,10 @@ Subject: [PATCH 01/19] Apachectl additions and options
  support/apachectl.in | 43 ++++++++++++++++++++++++++++++++++---------
  1 file changed, 34 insertions(+), 9 deletions(-)
 
-diff --git a/support/apachectl.in b/support/apachectl.in
-index 3281c2e..c6ac3ea 100644
---- a/support/apachectl.in
-+++ b/support/apachectl.in
+Index: httpd-2.4.66/support/apachectl.in
+===================================================================
+--- httpd-2.4.66.orig/support/apachectl.in
++++ httpd-2.4.66/support/apachectl.in
 @@ -44,19 +44,25 @@ ARGV="$@"
  # the path to your httpd binary, including options if necessary
  HTTPD='@exp_sbindir@/@progname@'
