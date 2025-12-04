@@ -8,10 +8,10 @@ Subject: [PATCH 07/19] Update Apachectl to reference cpanel.config;
  support/apachectl.in | 20 ++++++++++++++++++--
  1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/support/apachectl.in b/support/apachectl.in
-index c6ac3ea..07c9912 100644
---- a/support/apachectl.in
-+++ b/support/apachectl.in
+Index: httpd-2.4.66/support/apachectl.in
+===================================================================
+--- httpd-2.4.66.orig/support/apachectl.in
++++ httpd-2.4.66/support/apachectl.in
 @@ -56,7 +56,8 @@ fi
  #
  # the URL to your server's mod_status status page.  If you do not

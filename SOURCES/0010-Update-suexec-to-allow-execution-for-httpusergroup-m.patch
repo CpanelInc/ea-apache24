@@ -8,10 +8,10 @@ Subject: [PATCH 10/19] Update suexec to allow execution for httpusergroup
  support/suexec.c | 33 +++++++++++++++++++++++++++++++--
  1 file changed, 31 insertions(+), 2 deletions(-)
 
-diff --git a/support/suexec.c b/support/suexec.c
-index ab200fb..04e6a08 100644
---- a/support/suexec.c
-+++ b/support/suexec.c
+Index: httpd-2.4.66/support/suexec.c
+===================================================================
+--- httpd-2.4.66.orig/support/suexec.c
++++ httpd-2.4.66/support/suexec.c
 @@ -267,6 +267,25 @@ static void clean_env(void)
      environ = cleanenv;
  }
@@ -54,11 +54,10 @@ index ab200fb..04e6a08 100644
      if (actual_uname == NULL || target_homedir == NULL) {
          log_err("failed to alloc memory\n");
          exit(126);
-@@ -513,6 +534,14 @@ int main(int argc, char *argv[])
-         exit(108);
+@@ -514,6 +535,14 @@ int main(int argc, char *argv[])
      }
  
-+    /*
+     /*
 +     * Error out if user UID is not a member of group GID.
 +     */
 +    if ((gid != default_gid) && !is_group_member(actual_uname, gid)) {
@@ -66,9 +65,10 @@ index ab200fb..04e6a08 100644
 +	exit(108);
 +    }
 +
-     /*
++    /*
       * Change UID/GID here so that the following tests work over NFS.
       *
+      * Initialize the group access list for the target user,
 @@ -642,9 +671,9 @@ int main(int argc, char *argv[])
       * the name/group of the cwd or the program.
       */

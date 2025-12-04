@@ -16,11 +16,11 @@ to be served.
  server/core.c               | 5 +++--
  2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/modules/mappers/mod_alias.c b/modules/mappers/mod_alias.c
-index 35eca74..bdd0980 100644
---- a/modules/mappers/mod_alias.c
-+++ b/modules/mappers/mod_alias.c
-@@ -592,6 +592,7 @@ static char *try_alias_list(request_rec *r, apr_array_header_t *aliases,
+Index: httpd-2.4.66/modules/mappers/mod_alias.c
+===================================================================
+--- httpd-2.4.66.orig/modules/mappers/mod_alias.c
++++ httpd-2.4.66/modules/mappers/mod_alias.c
+@@ -592,6 +592,7 @@ static char *try_alias_list(request_rec
               */
              if (!is_redir) {
                  found = ap_server_root_relative(r->pool, found);
@@ -28,11 +28,11 @@ index 35eca74..bdd0980 100644
              }
              if (found) {
                  *status = alias->redir_status;
-diff --git a/server/core.c b/server/core.c
-index f14d6cf..e73df8c 100644
---- a/server/core.c
-+++ b/server/core.c
-@@ -5061,8 +5061,9 @@ static int default_handler(request_rec *r)
+Index: httpd-2.4.66/server/core.c
+===================================================================
+--- httpd-2.4.66.orig/server/core.c
++++ httpd-2.4.66/server/core.c
+@@ -5061,8 +5061,9 @@ static int default_handler(request_rec *
                  return HTTP_NOT_FOUND;
              }
  

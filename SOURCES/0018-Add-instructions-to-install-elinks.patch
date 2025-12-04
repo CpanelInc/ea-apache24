@@ -7,10 +7,10 @@ Subject: [PATCH 18/19] Add instructions to install elinks.
  support/apachectl.in | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/support/apachectl.in b/support/apachectl.in
-index 07c9912..21033a1 100644
---- a/support/apachectl.in
-+++ b/support/apachectl.in
+Index: httpd-2.4.66/support/apachectl.in
+===================================================================
+--- httpd-2.4.66.orig/support/apachectl.in
++++ httpd-2.4.66/support/apachectl.in
 @@ -101,6 +101,9 @@ fi
  function checklynx() {
  if [ "$LYNX" = "none" ]; then
