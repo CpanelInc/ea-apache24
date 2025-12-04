@@ -8,7 +8,7 @@ Subject: [PATCH 04/19] Bump coresize limit if coredumpdirectory is configured
  1 file changed, 19 insertions(+)
 
 diff --git a/server/core.c b/server/core.c
-index fbda9b6..dec4975 100644
+index 925bb23..23a09a9 100644
 --- a/server/core.c
 +++ b/server/core.c
 @@ -5145,6 +5145,25 @@ static int core_post_config(apr_pool_t *pconf, apr_pool_t *plog, apr_pool_t *pte
