@@ -2128,6 +2128,11 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Thu Dec 04 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-1
 - EA-13281: Update ea-apache24 from v2.4.65 to v2.4.66
+	- low: Apache HTTP Server: mod_md (ACME), unintended retry intervals (CVE-2025-55753)
+	- low: Apache HTTP Server: Server Side Includes adds query string to #exec cmd=... (CVE-2025-58098)
+	- moderate: Apache HTTP Server: NTLM Leakage on Windows through UNC SSRF (CVE-2025-59775)
+	- low: Apache HTTP Server: CGI environment variable override (CVE-2025-65082)
+	- moderate: Apache HTTP Server: mod_userdir+suexec bypass via AllowOverride FileInfo (CVE-2025-66200)
 
 * Mon Aug 11 2025 Julian Brown <julian.brown@webpros.com> - 2.4.65-4
 - EA4-98: Adjust exec_code_asuser
