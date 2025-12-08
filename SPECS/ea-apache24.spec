@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.66
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 1
+%define release_prefix 2
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -100,6 +100,8 @@ Patch701: 0017-Update-apxs-to-use-the-correct-path-for-top_builddir.patch
 Patch801: 0018-Add-instructions-to-install-elinks.patch
 
 Patch902: 0019-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
+
+Patch903: 0020-mod_md-2.6.7-fix-MDStapleOthers-regression.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -1402,6 +1404,9 @@ mod_watchdog hooks.
 %patch801 -p1 -b .instructaboutelinks
 %endif
 
+%patch902 -p1 -b .acceptmutex
+%patch903 -p1 -b .modmdstapleothers
+
 # Patch in the vendor string and the release string
 sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
 sed -i 's/@RELEASE@/%{release}/' server/core.c
@@ -2126,6 +2131,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Mon Dec 08 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-2
+- EA-13281: Backport mod_md v2.6.7 fix for MDStapleOthers regression
+
 * Thu Dec 04 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-1
 - EA-13281: Update ea-apache24 from v2.4.65 to v2.4.66
 	- low: Apache HTTP Server: mod_md (ACME), unintended retry intervals (CVE-2025-55753)
