@@ -7,11 +7,11 @@ Subject: [PATCH 17/19] Update apxs to use the correct path for top_builddir
  support/apxs.in | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/support/apxs.in b/support/apxs.in
-index 9c45f07..54de784 100644
---- a/support/apxs.in
-+++ b/support/apxs.in
-@@ -55,6 +55,7 @@ my $includedir     = $destdir . get_vars("includedir");
+Index: httpd-2.4.66/support/apxs.in
+===================================================================
+--- httpd-2.4.66.orig/support/apxs.in
++++ httpd-2.4.66/support/apxs.in
+@@ -55,6 +55,7 @@ my $includedir     = $destdir . get_vars
  my $CFG_INCLUDEDIR = eval qq("$includedir");
  my $CFG_CC         = get_vars("CC");
  my $libexecdir     = $destdir . get_vars("libexecdir");

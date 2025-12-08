@@ -9,11 +9,11 @@ Subject: [PATCH 14/19] Downgrade loglevel for long lost pid warnings
  server/mpm/worker/worker.c   | 2 +-
  3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/server/mpm/event/event.c b/server/mpm/event/event.c
-index 050d823..6598949 100644
---- a/server/mpm/event/event.c
-+++ b/server/mpm/event/event.c
-@@ -3203,7 +3203,7 @@ static void server_main_loop(int remaining_children_to_start)
+Index: httpd-2.4.66/server/mpm/event/event.c
+===================================================================
+--- httpd-2.4.66.orig/server/mpm/event/event.c
++++ httpd-2.4.66/server/mpm/event/event.c
+@@ -3203,7 +3203,7 @@ static void server_main_loop(int remaini
                  /* Great, we've probably just lost a slot in the
                   * scoreboard.  Somehow we don't know about this child.
                   */
@@ -22,11 +22,11 @@ index 050d823..6598949 100644
                               ap_server_conf, APLOGNO(00488)
                               "long lost child came home! (pid %ld)",
                               (long) pid.pid);
-diff --git a/server/mpm/prefork/prefork.c b/server/mpm/prefork/prefork.c
-index b5adb57..057472e 100644
---- a/server/mpm/prefork/prefork.c
-+++ b/server/mpm/prefork/prefork.c
-@@ -1042,7 +1042,7 @@ static int prefork_run(apr_pool_t *_pconf, apr_pool_t *plog, server_rec *s)
+Index: httpd-2.4.66/server/mpm/prefork/prefork.c
+===================================================================
+--- httpd-2.4.66.orig/server/mpm/prefork/prefork.c
++++ httpd-2.4.66/server/mpm/prefork/prefork.c
+@@ -1042,7 +1042,7 @@ static int prefork_run(apr_pool_t *_pcon
                   * scoreboard.  Somehow we don't know about this
                   * child.
                   */
@@ -35,11 +35,11 @@ index b5adb57..057472e 100644
                              0, ap_server_conf, APLOGNO(00167)
                              "long lost child came home! (pid %ld)", (long)pid.pid);
              }
-diff --git a/server/mpm/worker/worker.c b/server/mpm/worker/worker.c
-index 315371d..81eb1a9 100644
---- a/server/mpm/worker/worker.c
-+++ b/server/mpm/worker/worker.c
-@@ -1694,7 +1694,7 @@ static void server_main_loop(int remaining_children_to_start)
+Index: httpd-2.4.66/server/mpm/worker/worker.c
+===================================================================
+--- httpd-2.4.66.orig/server/mpm/worker/worker.c
++++ httpd-2.4.66/server/mpm/worker/worker.c
+@@ -1694,7 +1694,7 @@ static void server_main_loop(int remaini
                  /* Great, we've probably just lost a slot in the
                   * scoreboard.  Somehow we don't know about this child.
                   */
