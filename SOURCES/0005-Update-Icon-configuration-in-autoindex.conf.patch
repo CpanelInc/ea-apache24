@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:31:51 -0500
-Subject: [PATCH 05/19] Update Icon configuration in autoindex.conf
+Subject: [PATCH 05/20] Update Icon configuration in autoindex.conf
 
 ---
  docs/conf/extra/httpd-autoindex.conf.in | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Index: httpd-2.4.66/docs/conf/extra/httpd-autoindex.conf.in
-===================================================================
---- httpd-2.4.66.orig/docs/conf/extra/httpd-autoindex.conf.in
-+++ httpd-2.4.66/docs/conf/extra/httpd-autoindex.conf.in
-@@ -21,7 +21,7 @@ IndexOptions FancyIndexing HTMLTable Ver
+diff --git a/docs/conf/extra/httpd-autoindex.conf.in b/docs/conf/extra/httpd-autoindex.conf.in
+index 51b02ed..0e8b626 100644
+--- a/docs/conf/extra/httpd-autoindex.conf.in
++++ b/docs/conf/extra/httpd-autoindex.conf.in
+@@ -21,7 +21,7 @@ IndexOptions FancyIndexing HTMLTable VersionSort
  Alias /icons/ "@exp_iconsdir@/"
  
  <Directory "@exp_iconsdir@">

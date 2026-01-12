@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.66
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 2
+%define release_prefix 3
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -82,7 +82,7 @@ Patch302: 0008-Update-suexec-to-allow-trusted-scripts.patch
 Patch303: 0009-Update-suexec-to-work-with-cPanel-Mailman-installati.patch
 Patch304: 0010-Update-suexec-to-allow-execution-for-httpusergroup-m.patch
 Patch305: 0011-Update-apxs-to-automatically-generate-module-conf-fi.patch
-Patch306: 0012-Add-SymlinkProtect-and-SymlinkProtectRoot-functional.patch
+Patch306: 0012-0012-Add-SymlinkProtect-and-SymlinkProtectRoot-funct.patch
 
 # cPanel Performance Patches
 Patch401: 0013-Increase-random-seed-size.patch
@@ -101,7 +101,7 @@ Patch801: 0018-Add-instructions-to-install-elinks.patch
 
 Patch902: 0019-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
 
-Patch903: 0020-mod_md-2.6.7-fix-MDStapleOthers-regression.patch
+Patch903: 0020-fix-regression-in-77abeb39879fd13d220043641ece641108.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -2131,6 +2131,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Mon Jan 12 2026 Jared Wright <jared.wright@webpros.com> - 2.4.66-3
+- CPANEL-46581: Update apachectl to use new whm-server-status-endpoint.
+
 * Mon Dec 08 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-2
 - EA-13281: Backport mod_md v2.6.7 fix for MDStapleOthers regression
 

@@ -1,16 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Wed, 1 Apr 2020 11:24:22 -0500
-Subject: [PATCH 03/19] Add cPanel layout
+Subject: [PATCH 03/20] Add cPanel layout
 
 ---
  config.layout | 23 +++++++++++++++++++++++
  1 file changed, 23 insertions(+)
 
-Index: httpd-2.4.66/config.layout
-===================================================================
---- httpd-2.4.66.orig/config.layout
-+++ httpd-2.4.66/config.layout
+diff --git a/config.layout b/config.layout
+index a29351e..e5ce758 100644
+--- a/config.layout
++++ b/config.layout
 @@ -419,3 +419,26 @@
      proxycachedir:   ${localstatedir}/cache/apache2
  </Layout>

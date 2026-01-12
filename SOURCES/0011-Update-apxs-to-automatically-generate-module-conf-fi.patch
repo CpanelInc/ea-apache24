@@ -1,16 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:49:32 -0500
-Subject: [PATCH 11/19] Update apxs to automatically generate module conf files
+Subject: [PATCH 11/20] Update apxs to automatically generate module conf files
 
 ---
  support/apxs.in | 98 ++++---------------------------------------------
  1 file changed, 7 insertions(+), 91 deletions(-)
 
-Index: httpd-2.4.66/support/apxs.in
-===================================================================
---- httpd-2.4.66.orig/support/apxs.in
-+++ httpd-2.4.66/support/apxs.in
+diff --git a/support/apxs.in b/support/apxs.in
+index b2705fa..9c45f07 100644
+--- a/support/apxs.in
++++ b/support/apxs.in
 @@ -560,104 +560,20 @@ if ($opt_i or $opt_e) {
  
      #   activate module via LoadModule/AddModule directive

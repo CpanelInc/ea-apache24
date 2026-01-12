@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:34:24 -0500
-Subject: [PATCH 06/19] Update CacheMaxExpire to have a "hard" option
+Subject: [PATCH 06/20] Update CacheMaxExpire to have a "hard" option
 
 ---
  modules/cache/cache_util.h |  3 +++
  modules/cache/mod_cache.c  | 24 ++++++++++++++++++++----
  2 files changed, 23 insertions(+), 4 deletions(-)
 
-Index: httpd-2.4.66/modules/cache/cache_util.h
-===================================================================
---- httpd-2.4.66.orig/modules/cache/cache_util.h
-+++ httpd-2.4.66/modules/cache/cache_util.h
+diff --git a/modules/cache/cache_util.h b/modules/cache/cache_util.h
+index 6b92151..4c42a8e 100644
+--- a/modules/cache/cache_util.h
++++ b/modules/cache/cache_util.h
 @@ -195,6 +195,9 @@ typedef struct {
      unsigned int store_nostore_set:1;
      unsigned int enable_set:1;
@@ -22,11 +22,11 @@ Index: httpd-2.4.66/modules/cache/cache_util.h
  } cache_dir_conf;
  
  /* A linked-list of authn providers. */
-Index: httpd-2.4.66/modules/cache/mod_cache.c
-===================================================================
---- httpd-2.4.66.orig/modules/cache/mod_cache.c
-+++ httpd-2.4.66/modules/cache/mod_cache.c
-@@ -1452,6 +1452,11 @@ static apr_status_t cache_save_filter(ap
+diff --git a/modules/cache/mod_cache.c b/modules/cache/mod_cache.c
+index 3b4469e..2d6ce95 100644
+--- a/modules/cache/mod_cache.c
++++ b/modules/cache/mod_cache.c
+@@ -1452,6 +1452,11 @@ static apr_status_t cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
              exp = date + dconf->defex;
          }
      }
@@ -38,7 +38,7 @@ Index: httpd-2.4.66/modules/cache/mod_cache.c
      info->expire = exp;
  
      /* We found a stale entry which wasn't really stale. */
-@@ -1951,7 +1956,9 @@ static void *create_dir_config(apr_pool_
+@@ -1951,7 +1956,9 @@ static void *create_dir_config(apr_pool_t *p, char *dummy)
  
      /* array of providers for this URL space */
      dconf->cacheenable = apr_array_make(p, 10, sizeof(struct cache_enable));
@@ -49,7 +49,7 @@ Index: httpd-2.4.66/modules/cache/mod_cache.c
      return dconf;
  }
  
-@@ -2001,7 +2008,10 @@ static void *merge_dir_config(apr_pool_t
+@@ -2001,7 +2008,10 @@ static void *merge_dir_config(apr_pool_t *p, void *basev, void *addv) {
      new->enable_set = add->enable_set || base->enable_set;
      new->disable = (add->disable_set == 0) ? base->disable : add->disable;
      new->disable_set = add->disable_set || base->disable_set;
@@ -61,7 +61,7 @@ Index: httpd-2.4.66/modules/cache/mod_cache.c
      return new;
  }
  
-@@ -2329,12 +2339,18 @@ static const char *add_cache_disable(cmd
+@@ -2329,12 +2339,18 @@ static const char *add_cache_disable(cmd_parms *parms, void *dummy,
  }
  
  static const char *set_cache_maxex(cmd_parms *parms, void *dummy,

@@ -1,28 +1,34 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:41:19 -0500
-Subject: [PATCH 07/19] Update Apachectl to reference cpanel.config;
+Subject: [PATCH 07/20] Update Apachectl to reference cpanel.config;
  Additionally allow MIN_FD_LIMIT and MAX_FD_LIMIT to be configurable
 
 ---
- support/apachectl.in | 20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ support/apachectl.in | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
 
-Index: httpd-2.4.66/support/apachectl.in
-===================================================================
---- httpd-2.4.66.orig/support/apachectl.in
-+++ httpd-2.4.66/support/apachectl.in
-@@ -56,7 +56,8 @@ fi
+diff --git a/support/apachectl.in b/support/apachectl.in
+index c6ac3ea..6aa8f66 100644
+--- a/support/apachectl.in
++++ b/support/apachectl.in
+@@ -56,7 +56,14 @@ fi
  #
  # the URL to your server's mod_status status page.  If you do not
  # have one, then status and fullstatus will not work.
 -STATUSURL="http://localhost:@PORT@/server-status"
 +PORT="$(grep 'apache_port=' /var/cpanel/cpanel.config 2>/dev/null | sed -e 's/.*=\([.0-9]*:\)\{0,1\}//;' -e 's/[^0-9]*//g' 2>/dev/null)"
-+STATUSURL="http://localhost:${PORT:-80}/whm-server-status"
++if [ -f /var/cpanel/whm_server_status_key ]; then
++    WHM_SERVER_STATUS_KEY=$(cat /var/cpanel/whm_server_status_key)
++else
++    WHM_SERVER_STATUS_KEY="whm-server-status"
++fi
++
++STATUSURL="http://localhost:${PORT:-80}/$WHM_SERVER_STATUS_KEY"
  
  # Source /etc/sysconfig/httpd for $HTTPD setting, etc.
  if [ -r /etc/sysconfig/httpd ]; then
-@@ -68,7 +69,22 @@ fi
+@@ -68,7 +75,22 @@ fi
  # number of file descriptors allowed per child process. This is
  # critical for configurations that use many file descriptors,
  # such as mass vhosting, or a multithreaded server.
