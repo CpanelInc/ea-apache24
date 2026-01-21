@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: "J. Nick Koston" <nick@cpanel.net>
 Date: Fri, 13 Dec 2019 10:57:41 -0600
-Subject: [PATCH 16/19] Optimize finding a module. ap_find_linked_module was
+Subject: [PATCH 16/20] Optimize finding a module. ap_find_linked_module was
  not performing well when there a lot of IfModule statements in httpd.conf.
  This change uses a hash to keep track of modules which cut the startup time
  from 3s to 1.5s on a large configuration file. This also makes find_module
@@ -12,11 +12,11 @@ Subject: [PATCH 16/19] Optimize finding a module. ap_find_linked_module was
  server/core.c   | 42 +-----------------------------------------
  2 files changed, 30 insertions(+), 49 deletions(-)
 
-Index: httpd-2.4.66/server/config.c
-===================================================================
---- httpd-2.4.66.orig/server/config.c
-+++ httpd-2.4.66/server/config.c
-@@ -229,6 +229,7 @@ AP_DECLARE_DATA module *ap_top_module =
+diff --git a/server/config.c b/server/config.c
+index 635b65d..24ca489 100644
+--- a/server/config.c
++++ b/server/config.c
+@@ -229,6 +229,7 @@ AP_DECLARE_DATA module *ap_top_module = NULL;
  AP_DECLARE_DATA module **ap_loaded_modules=NULL;
  
  static apr_hash_t *ap_config_hash = NULL;
@@ -24,7 +24,7 @@ Index: httpd-2.4.66/server/config.c
  
  /* a list of the module symbol names with the trailing "_module"removed */
  static char **ap_module_short_names = NULL;
-@@ -513,9 +514,13 @@ static void rebuild_conf_hash(apr_pool_t
+@@ -513,9 +514,13 @@ static void rebuild_conf_hash(apr_pool_t *p, int add_prelinked)
      module **m;
  
      ap_config_hash = apr_hash_make(p);
@@ -38,7 +38,7 @@ Index: httpd-2.4.66/server/config.c
      if (add_prelinked) {
          for (m = ap_prelinked_modules; *m != NULL; m++) {
              ap_add_module_commands(*m, p);
-@@ -526,9 +531,11 @@ static void rebuild_conf_hash(apr_pool_t
+@@ -526,9 +531,11 @@ static void rebuild_conf_hash(apr_pool_t *p, int add_prelinked)
  static void ap_add_module_commands(module *m, apr_pool_t *p)
  {
      apr_pool_t *tpool;
@@ -50,7 +50,7 @@ Index: httpd-2.4.66/server/config.c
  
      cmd = m->cmds;
  
-@@ -537,6 +544,15 @@ static void ap_add_module_commands(modul
+@@ -537,6 +544,15 @@ static void ap_add_module_commands(module *m, apr_pool_t *p)
      }
  
      tpool = apr_hash_pool_get(ap_config_hash);
@@ -66,7 +66,7 @@ Index: httpd-2.4.66/server/config.c
  
      while (cmd && cmd->name) {
          mln = apr_palloc(tpool, sizeof(ap_mod_list));
-@@ -662,6 +678,8 @@ AP_DECLARE(const char *) ap_add_module(m
+@@ -662,6 +678,8 @@ AP_DECLARE(const char *) ap_add_module(module *m, apr_pool_t *p,
  AP_DECLARE(void) ap_remove_module(module *m)
  {
      module *modp;
@@ -75,7 +75,7 @@ Index: httpd-2.4.66/server/config.c
  
      modp = ap_top_module;
      if (modp == m) {
-@@ -690,6 +708,16 @@ AP_DECLARE(void) ap_remove_module(module
+@@ -690,6 +708,16 @@ AP_DECLARE(void) ap_remove_module(module *m)
          modp->next = modp->next->next;
      }
  
@@ -92,7 +92,7 @@ Index: httpd-2.4.66/server/config.c
      free(ap_module_short_names[m->module_index]);
      ap_module_short_names[m->module_index] = NULL;
      merger_func_cache[m->module_index] = NULL;
-@@ -829,14 +857,7 @@ AP_DECLARE(const char *) ap_find_module_
+@@ -829,14 +857,7 @@ AP_DECLARE(const char *) ap_find_module_short_name(int module_index)
  
  AP_DECLARE(module *) ap_find_linked_module(const char *name)
  {
@@ -108,11 +108,11 @@ Index: httpd-2.4.66/server/config.c
  }
  
  /*****************************************************************
-Index: httpd-2.4.66/server/core.c
-===================================================================
---- httpd-2.4.66.orig/server/core.c
-+++ httpd-2.4.66/server/core.c
-@@ -2809,47 +2809,7 @@ static const char *ifsection(cmd_parms *
+diff --git a/server/core.c b/server/core.c
+index e73df8c..8f77521 100644
+--- a/server/core.c
++++ b/server/core.c
+@@ -2809,47 +2809,7 @@ static const char *ifsection(cmd_parms *cmd, void *mconfig, const char *arg)
  
  static module *find_module(server_rec *s, const char *name)
  {

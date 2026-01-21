@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Rishwanth Yeddula <rish@cpanel.net>
 Date: Tue, 26 Mar 2019 13:52:34 -0500
-Subject: [PATCH 15/19] Ensure that Paths configured as Aliases are exempt from
+Subject: [PATCH 15/20] Ensure that Paths configured as Aliases are exempt from
  the symlink protection checks.
 
 Case CPANEL-22257: Paths that are configured via the "Alias" directive
@@ -16,11 +16,11 @@ to be served.
  server/core.c               | 5 +++--
  2 files changed, 4 insertions(+), 2 deletions(-)
 
-Index: httpd-2.4.66/modules/mappers/mod_alias.c
-===================================================================
---- httpd-2.4.66.orig/modules/mappers/mod_alias.c
-+++ httpd-2.4.66/modules/mappers/mod_alias.c
-@@ -592,6 +592,7 @@ static char *try_alias_list(request_rec
+diff --git a/modules/mappers/mod_alias.c b/modules/mappers/mod_alias.c
+index 35eca74..bdd0980 100644
+--- a/modules/mappers/mod_alias.c
++++ b/modules/mappers/mod_alias.c
+@@ -592,6 +592,7 @@ static char *try_alias_list(request_rec *r, apr_array_header_t *aliases,
               */
              if (!is_redir) {
                  found = ap_server_root_relative(r->pool, found);
@@ -28,11 +28,11 @@ Index: httpd-2.4.66/modules/mappers/mod_alias.c
              }
              if (found) {
                  *status = alias->redir_status;
-Index: httpd-2.4.66/server/core.c
-===================================================================
---- httpd-2.4.66.orig/server/core.c
-+++ httpd-2.4.66/server/core.c
-@@ -5061,8 +5061,9 @@ static int default_handler(request_rec *
+diff --git a/server/core.c b/server/core.c
+index f14d6cf..e73df8c 100644
+--- a/server/core.c
++++ b/server/core.c
+@@ -5061,8 +5061,9 @@ static int default_handler(request_rec *r)
                  return HTTP_NOT_FOUND;
              }
  

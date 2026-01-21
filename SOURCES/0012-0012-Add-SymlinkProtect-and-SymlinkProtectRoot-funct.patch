@@ -1,7 +1,8 @@
-From c748f282ae4832b6c75f63e7cc2d7ca6af16a257 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Dan Muey <daniel.muey@webpros.com>
 Date: Wed, 23 Jul 2025 15:57:38 +0000
-Subject: [PATCH] 0012-Add-SymlinkProtect-and-SymlinkProtectRoot-functional
+Subject: [PATCH 12/20] 
+ 0012-Add-SymlinkProtect-and-SymlinkProtectRoot-functional
 
 ---
  include/http_core.h           |  10 +++-
@@ -9,10 +10,10 @@ Subject: [PATCH] 0012-Add-SymlinkProtect-and-SymlinkProtectRoot-functional
  server/core.c                 | 103 ++++++++++++++++++++++++++++++++++
  3 files changed, 134 insertions(+), 10 deletions(-)
 
-Index: httpd-2.4.66/include/http_core.h
-===================================================================
---- httpd-2.4.66.orig/include/http_core.h
-+++ httpd-2.4.66/include/http_core.h
+diff --git a/include/http_core.h b/include/http_core.h
+index 9fb9f51..4d756d3 100644
+--- a/include/http_core.h
++++ b/include/http_core.h
 @@ -509,7 +509,7 @@ typedef unsigned long etag_components_t;
  #define AP_CORE_MERGE_FLAG(field, to, base, over) to->field = \
                 over->field != AP_CORE_CONFIG_UNSET            \
@@ -44,10 +45,10 @@ Index: httpd-2.4.66/include/http_core.h
   
      apr_size_t   flush_max_threshold;
      apr_int32_t  flush_max_pipelined;
-Index: httpd-2.4.66/modules/mappers/mod_userdir.c
-===================================================================
---- httpd-2.4.66.orig/modules/mappers/mod_userdir.c
-+++ httpd-2.4.66/modules/mappers/mod_userdir.c
+diff --git a/modules/mappers/mod_userdir.c b/modules/mappers/mod_userdir.c
+index 0a34fd3..ea27154 100644
+--- a/modules/mappers/mod_userdir.c
++++ b/modules/mappers/mod_userdir.c
 @@ -51,6 +51,7 @@
  
  #include "apr_strings.h"
@@ -66,7 +67,7 @@ Index: httpd-2.4.66/modules/mappers/mod_userdir.c
  
  #if !defined(WIN32) && !defined(OS2) && !defined(NETWARE)
  #define HAVE_UNIX_SUEXEC
-@@ -203,6 +206,7 @@ static int translate_userdir(request_rec
+@@ -203,6 +206,7 @@ static int translate_userdir(request_rec *r)
      const char *user, *dname;
      char *redirect;
      apr_finfo_t statbuf;
@@ -74,7 +75,7 @@ Index: httpd-2.4.66/modules/mappers/mod_userdir.c
  
      /*
       * If the URI doesn't match our basic pattern, we've nothing to do with
-@@ -259,6 +263,8 @@ static int translate_userdir(request_rec
+@@ -259,6 +263,8 @@ static int translate_userdir(request_rec *r)
       * Special cases all checked, onward to normal substitution processing.
       */
  
@@ -83,7 +84,7 @@ Index: httpd-2.4.66/modules/mappers/mod_userdir.c
      while (*userdirs) {
          const char *userdir = ap_getword_conf(r->pool, &userdirs);
          char *filename = NULL, *prefix = NULL;
-@@ -313,18 +319,20 @@ static int translate_userdir(request_rec
+@@ -313,18 +319,20 @@ static int translate_userdir(request_rec *r)
          }
  
          /*
@@ -112,7 +113,7 @@ Index: httpd-2.4.66/modules/mappers/mod_userdir.c
                                  filename);
              /* XXX: Does this walk us around FollowSymLink rules?
               * When statbuf contains info on r->filename we can save a syscall
-@@ -333,6 +341,13 @@ static int translate_userdir(request_rec
+@@ -333,6 +341,13 @@ static int translate_userdir(request_rec *r)
              if (*userdirs && dname[0] == 0)
                  r->finfo = statbuf;
  
@@ -126,10 +127,10 @@ Index: httpd-2.4.66/modules/mappers/mod_userdir.c
              /* For use in the get_suexec_identity phase */
              ap_set_module_config(r->request_config, &userdir_module, (void *)user);
  
-Index: httpd-2.4.66/server/core.c
-===================================================================
---- httpd-2.4.66.orig/server/core.c
-+++ httpd-2.4.66/server/core.c
+diff --git a/server/core.c b/server/core.c
+index 23a09a9..8a2a3cf 100644
+--- a/server/core.c
++++ b/server/core.c
 @@ -21,6 +21,8 @@
  #include "apr_hash.h"
  #include "apr_thread_proc.h"    /* for RLIMIT stuff */
@@ -139,7 +140,7 @@ Index: httpd-2.4.66/server/core.c
  
  #include "apr_version.h"
  #if APR_MAJOR_VERSION < 2
-@@ -475,6 +477,7 @@ static void *create_core_server_config(a
+@@ -475,6 +477,7 @@ static void *create_core_server_config(apr_pool_t *a, server_rec *s)
  
      if (!is_virtual) {
          conf->ap_document_root = DOCUMENT_LOCATION;
@@ -147,7 +148,7 @@ Index: httpd-2.4.66/server/core.c
          conf->access_name = DEFAULT_ACCESS_FNAME;
  
          /* A mapping only makes sense in the global context */
-@@ -539,6 +542,9 @@ static void *merge_core_server_configs(a
+@@ -539,6 +542,9 @@ static void *merge_core_server_configs(apr_pool_t *p, void *basev, void *virtv)
      if (virt->ap_document_root)
          conf->ap_document_root = virt->ap_document_root;
  
@@ -157,7 +158,7 @@ Index: httpd-2.4.66/server/core.c
      if (virt->access_name)
          conf->access_name = virt->access_name;
  
-@@ -585,6 +591,10 @@ static void *merge_core_server_configs(a
+@@ -585,6 +591,10 @@ static void *merge_core_server_configs(apr_pool_t *p, void *basev, void *virtv)
                             ? virt->merge_trailers
                             : base->merge_trailers;
  
@@ -168,7 +169,7 @@ Index: httpd-2.4.66/server/core.c
      conf->protocols = ((virt->protocols->nelts > 0)? 
                         virt->protocols : base->protocols);
      conf->protocols_honor_order = ((virt->protocols_honor_order < 0)?
-@@ -4428,6 +4438,30 @@ static const char *set_merge_trailers(cm
+@@ -4428,6 +4438,30 @@ static const char *set_merge_trailers(cmd_parms *cmd, void *dummy, int arg)
      return NULL;
  }
  
@@ -199,7 +200,7 @@ Index: httpd-2.4.66/server/core.c
  #ifdef WIN32
  static const char *set_unc_list(cmd_parms *cmd, void *d_, int argc, char *const argv[])
  {
-@@ -4728,6 +4762,10 @@ AP_INIT_TAKE1("ThreadStackSize", ap_mpm_
+@@ -4728,6 +4762,10 @@ AP_INIT_TAKE1("ThreadStackSize", ap_mpm_set_thread_stacksize, NULL, RSRC_CONF,
  AP_INIT_TAKE1("EnableExceptionHook", ap_mpm_set_exception_hook, NULL, RSRC_CONF,
                "Controls whether exception hook may be called after a crash"),
  #endif
@@ -210,7 +211,7 @@ Index: httpd-2.4.66/server/core.c
  AP_INIT_TAKE1("TraceEnable", set_trace_enable, NULL, RSRC_CONF,
                "'on' (default), 'off' or 'extended' to trace request body content"),
  AP_INIT_FLAG("MergeTrailers", set_merge_trailers, NULL, RSRC_CONF,
-@@ -4893,6 +4931,9 @@ static int default_handler(request_rec *
+@@ -4893,6 +4931,9 @@ static int default_handler(request_rec *r)
      int errstatus;
      apr_file_t *fd = NULL;
      apr_status_t status;
@@ -220,7 +221,7 @@ Index: httpd-2.4.66/server/core.c
      /* XXX if/when somebody writes a content-md5 filter we either need to
       *     remove this support or coordinate when to use the filter vs.
       *     when to use this code
-@@ -4903,6 +4944,13 @@ static int default_handler(request_rec *
+@@ -4903,6 +4944,13 @@ static int default_handler(request_rec *r)
      int bld_content_md5;
  
      d = (core_dir_config *)ap_get_core_module_config(r->per_dir_config);
@@ -234,7 +235,7 @@ Index: httpd-2.4.66/server/core.c
      bld_content_md5 = (d->content_md5 == AP_CONTENT_MD5_ON)
                        && r->output_filters->frec->ftype != AP_FTYPE_RESOURCE;
  
-@@ -4976,6 +5024,61 @@ static int default_handler(request_rec *
+@@ -4976,6 +5024,61 @@ static int default_handler(request_rec *r)
              return HTTP_FORBIDDEN;
          }
  

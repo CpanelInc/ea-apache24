@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:46:51 -0500
-Subject: [PATCH 10/19] Update suexec to allow execution for httpusergroup
+Subject: [PATCH 10/20] Update suexec to allow execution for httpusergroup
  members
 
 ---
  support/suexec.c | 33 +++++++++++++++++++++++++++++++--
  1 file changed, 31 insertions(+), 2 deletions(-)
 
-Index: httpd-2.4.66/support/suexec.c
-===================================================================
---- httpd-2.4.66.orig/support/suexec.c
-+++ httpd-2.4.66/support/suexec.c
+diff --git a/support/suexec.c b/support/suexec.c
+index ab200fb..04e6a08 100644
+--- a/support/suexec.c
++++ b/support/suexec.c
 @@ -267,6 +267,25 @@ static void clean_env(void)
      environ = cleanenv;
  }
@@ -54,10 +54,11 @@ Index: httpd-2.4.66/support/suexec.c
      if (actual_uname == NULL || target_homedir == NULL) {
          log_err("failed to alloc memory\n");
          exit(126);
-@@ -514,6 +535,14 @@ int main(int argc, char *argv[])
+@@ -513,6 +534,14 @@ int main(int argc, char *argv[])
+         exit(108);
      }
  
-     /*
++    /*
 +     * Error out if user UID is not a member of group GID.
 +     */
 +    if ((gid != default_gid) && !is_group_member(actual_uname, gid)) {
@@ -65,10 +66,9 @@ Index: httpd-2.4.66/support/suexec.c
 +	exit(108);
 +    }
 +
-+    /*
+     /*
       * Change UID/GID here so that the following tests work over NFS.
       *
-      * Initialize the group access list for the target user,
 @@ -642,9 +671,9 @@ int main(int argc, char *argv[])
       * the name/group of the cwd or the program.
       */
