@@ -1,0 +1,99 @@
+From 542e0da07048d3934ef18c22b44cf8d62e64067f Mon Sep 17 00:00:00 2001
+From: Stefan Eissing <icing@apache.org>
+Date: Thu, 11 Dec 2025 08:45:15 +0000
+Subject: [PATCH]   *) mod_http2: update to version 2.0.37      Prevent double
+ purge of a stream, resulting in a double free.      Fixes PR 69899.
+
+git-svn-id: https://svn.apache.org/repos/asf/httpd/httpd/trunk@1930444 13f79535-47bb-0310-9956-ffa450edef68
+---
+ changes-entries/h2_v2.0.37.txt |  4 ++++
+ modules/http2/h2_mplx.c        | 23 ++++++++++++++++++-----
+ modules/http2/h2_version.h     |  4 ++--
+ 3 files changed, 24 insertions(+), 7 deletions(-)
+ create mode 100644 changes-entries/h2_v2.0.37.txt
+
+diff --git a/changes-entries/h2_v2.0.37.txt b/changes-entries/h2_v2.0.37.txt
+new file mode 100644
+index 00000000000..8f22cde5d8b
+--- /dev/null
++++ b/changes-entries/h2_v2.0.37.txt
+@@ -0,0 +1,4 @@
++  *) mod_http2: update to version 2.0.37
++     Prevent double purge of a stream, resulting in a double free.
++     Fixes PR 69899.
++     [Stefan Eissing]
+diff --git a/modules/http2/h2_mplx.c b/modules/http2/h2_mplx.c
+index 470a14ee61b..8053f60c9a2 100644
+--- a/modules/http2/h2_mplx.c
++++ b/modules/http2/h2_mplx.c
+@@ -126,12 +126,24 @@ int h2_mplx_c1_stream_is_running(h2_mplx *m, h2_stream *stream)
+     return rv;
+ }
+ 
++static int add_for_purge(h2_mplx *m, h2_stream *stream)
++{
++    int i;
++    for (i = 0; i < m->spurge->nelts; ++i) {
++        h2_stream *s = APR_ARRAY_IDX(m->spurge, i, h2_stream*);
++        if (s == stream)  /* already scheduled for purging */
++            return FALSE;
++    }
++    APR_ARRAY_PUSH(m->spurge, h2_stream *) = stream;
++    return TRUE;
++}
++
+ static void c1c2_stream_joined(h2_mplx *m, h2_stream *stream)
+ {
+     ap_assert(!stream_is_running(stream));
+     
+     h2_ihash_remove(m->shold, stream->id);
+-    APR_ARRAY_PUSH(m->spurge, h2_stream *) = stream;
++    add_for_purge(m, stream);
+ }
+ 
+ static void m_stream_cleanup(h2_mplx *m, h2_stream *stream)
+@@ -164,7 +176,7 @@ static void m_stream_cleanup(h2_mplx *m, h2_stream *stream)
+             ap_log_cerror(APLOG_MARK, APLOG_TRACE2, 0, m->c1,
+                           H2_STRM_MSG(stream, "cleanup, c2 is done, move to spurge"));
+             /* processing has finished */
+-            APR_ARRAY_PUSH(m->spurge, h2_stream *) = stream;
++            add_for_purge(m, stream);
+         }
+         else {
+             ap_log_cerror(APLOG_MARK, APLOG_TRACE2, 0, m->c1,
+@@ -178,9 +190,10 @@ static void m_stream_cleanup(h2_mplx *m, h2_stream *stream)
+     }
+     else {
+         /* never started */
+-        ap_log_cerror(APLOG_MARK, APLOG_TRACE2, 0, m->c1,
+-                      H2_STRM_MSG(stream, "cleanup, never started, move to spurge"));
+-        APR_ARRAY_PUSH(m->spurge, h2_stream *) = stream;
++        int added = add_for_purge(m, stream);
++        if (added)
++            ap_log_cerror(APLOG_MARK, APLOG_TRACE2, 0, m->c1,
++                          H2_STRM_MSG(stream, "cleanup, never started, move to spurge"));
+     }
+ }
+ 
+diff --git a/modules/http2/h2_version.h b/modules/http2/h2_version.h
+index 8d38c34e786..8bcaf69e0a9 100644
+--- a/modules/http2/h2_version.h
++++ b/modules/http2/h2_version.h
+@@ -27,7 +27,7 @@
+  * @macro
+  * Version number of the http2 module as c string
+  */
+-#define MOD_HTTP2_VERSION "2.0.35"
++#define MOD_HTTP2_VERSION "2.0.37"
+ 
+ /**
+  * @macro
+@@ -35,7 +35,7 @@
+  * release. This is a 24 bit number with 8 bits for major number, 8 bits
+  * for minor and 8 bits for patch. Version 1.2.3 becomes 0x010203.
+  */
+-#define MOD_HTTP2_VERSION_NUM 0x020023
++#define MOD_HTTP2_VERSION_NUM 0x020025
+ 
+ 
+ #endif /* mod_h2_h2_version_h */

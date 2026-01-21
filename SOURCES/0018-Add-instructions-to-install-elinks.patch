@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Julian Brown <julian.brown@cpanel.net>
 Date: Tue, 9 Jun 2020 13:07:33 -0500
-Subject: [PATCH 18/19] Add instructions to install elinks.
+Subject: [PATCH 18/20] Add instructions to install elinks.
 
 ---
  support/apachectl.in | 3 +++
  1 file changed, 3 insertions(+)
 
-Index: httpd-2.4.66/support/apachectl.in
-===================================================================
---- httpd-2.4.66.orig/support/apachectl.in
-+++ httpd-2.4.66/support/apachectl.in
-@@ -101,6 +101,9 @@ fi
+diff --git a/support/apachectl.in b/support/apachectl.in
+index 6aa8f66..a5e68c0 100644
+--- a/support/apachectl.in
++++ b/support/apachectl.in
+@@ -107,6 +107,9 @@ fi
  function checklynx() {
  if [ "$LYNX" = "none" ]; then
     echo "The 'links' package is required for this functionality."

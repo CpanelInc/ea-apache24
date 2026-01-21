@@ -1,8 +1,9 @@
-From a20237adf694d172efdde583e6c3e7eba5cb1170 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Stefan Eissing <stefan@eissing.org>
 Date: Mon, 8 Dec 2025 12:59:13 +0100
-Subject: [PATCH] fix regression in 77abeb39879fd13d220043641ece64110873fded
- the borked MDStapleOthers inheritance
+Subject: [PATCH 20/20] fix regression in
+ 77abeb39879fd13d220043641ece64110873fded the borked MDStapleOthers
+ inheritance
 
 Backported from mod_md v2.6.7 for Apache 2.4.66 (bundled mod_md v2.6.6)
 ---
@@ -21,5 +22,3 @@ index d6807c9..9688714 100644
      nsc->ari_renewals = (add->ari_renewals != DEF_VAL)? add->ari_renewals : base->ari_renewals;
      nsc->dns01_cmd = (add->dns01_cmd)? add->dns01_cmd : base->dns01_cmd;
      nsc->current = NULL;
--- 
-2.43.0

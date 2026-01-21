@@ -1,16 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:45:12 -0500
-Subject: [PATCH 09/19] Update suexec to work with cPanel Mailman installations
+Subject: [PATCH 09/20] Update suexec to work with cPanel Mailman installations
 
 ---
  support/suexec.c | 77 ++++++++++++++++++++++++++++++++++++++----------
  1 file changed, 61 insertions(+), 16 deletions(-)
 
-Index: httpd-2.4.66/support/suexec.c
-===================================================================
---- httpd-2.4.66.orig/support/suexec.c
-+++ httpd-2.4.66/support/suexec.c
+diff --git a/support/suexec.c b/support/suexec.c
+index 9c6a674..ab200fb 100644
+--- a/support/suexec.c
++++ b/support/suexec.c
 @@ -270,8 +270,11 @@ static void clean_env(void)
  int main(int argc, char *argv[])
  {
@@ -33,10 +33,11 @@ Index: httpd-2.4.66/support/suexec.c
      if ((pw = getpwuid(uid)) == NULL) {
          log_err("crit: invalid uid: (%lu)\n", (unsigned long)uid);
          exit(102);
-@@ -394,6 +398,20 @@ int main(int argc, char *argv[])
+@@ -393,6 +397,20 @@ int main(int argc, char *argv[])
+         userdir = 1;
      }
  
-     /*
++    /*
 +     * Check for mailman
 +     */
 +    if (getcwd(cwd, AP_MAXPATH) == NULL) {
@@ -50,10 +51,9 @@ Index: httpd-2.4.66/support/suexec.c
 +        target_gname = "mailman";
 +    }
 +
-+    /*
+     /*
       * Error out if the target username is invalid.
       */
-     if (strspn(target_uname, "1234567890") != strlen(target_uname)) {
 @@ -482,7 +500,7 @@ int main(int argc, char *argv[])
       * a UID less than AP_UID_MIN.  Tsk tsk.
       */
@@ -129,7 +129,7 @@ Index: httpd-2.4.66/support/suexec.c
          log_err("directory is writable by others: (%s)\n", cwd);
          exit(116);
      }
-@@ -586,13 +621,23 @@ int main(int argc, char *argv[])
+@@ -586,12 +621,22 @@ int main(int argc, char *argv[])
  
      /*
       * Error out if the file is setuid or setgid.
@@ -141,7 +141,7 @@ Index: httpd-2.4.66/support/suexec.c
          exit(119);
      }
  
-     /*
++    /*
 +     * SETGID target executables are only allowed for mailman.
 +     * The verification that the group is actually mailman happens
 +     * in the next if block
@@ -150,7 +150,6 @@ Index: httpd-2.4.66/support/suexec.c
 +        log_err("file is either setuid or setgid: (%s/%s)\n", cwd, cmd);
 +        exit(119);
 +    }
-+    /*
+     /*
       * Error out if the target name/group is different from
       * the name/group of the cwd or the program.
-      */
