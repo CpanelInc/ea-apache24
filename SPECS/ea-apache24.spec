@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.66
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 2
+%define release_prefix 3
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -102,6 +102,8 @@ Patch801: 0018-Add-instructions-to-install-elinks.patch
 Patch902: 0019-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
 
 Patch903: 0020-mod_md-2.6.7-fix-MDStapleOthers-regression.patch
+
+Patch904: 0021-mod_http2-v2.0.37-prevent-double-free.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -1406,6 +1408,7 @@ mod_watchdog hooks.
 
 %patch902 -p1 -b .acceptmutex
 %patch903 -p1 -b .modmdstapleothers
+%patch904 -p1 -b .http2doublefree
 
 # Patch in the vendor string and the release string
 sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
@@ -2131,6 +2134,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Tue Jan 20 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-3
+- EA-13319: Backport mod_http2 v2.0.37 fix for double-free vulnerability (PR 69899)
+
 * Mon Dec 08 2025 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-2
 - EA-13281: Backport mod_md v2.6.7 fix for MDStapleOthers regression
 
