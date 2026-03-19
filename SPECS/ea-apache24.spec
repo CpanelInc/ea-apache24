@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.66
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 4
+%define release_prefix 5
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -1313,7 +1313,6 @@ Group: System Environment/Daemons
 Summary: Per-user/group execution module for the Apache HTTP Server
 Requires: ea-apache24 = 0:%{version}-%{release}, ea-apache24-mmn = %{mmnisa}
 Provides: ea-apache24-exec_code_asuser
-Conflicts: ea-apache24-exec_code_asuser
 
 %description -n ea-apache24-mod_suexec
 The mod_suexec module allows CGI scripts to run as a specified user
@@ -2134,6 +2133,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Thu Mar 19 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-5
+- EA4-242: Remove exec_code_asuser self-conflict from mod_suexec
+
 
 * Mon Jan 21 2026 Jared Wright <jared.wright@webpros.com> - 2.4.66-4
 - CPANEL-46581: Update apachectl to use new whm-server-status-endpoint.
