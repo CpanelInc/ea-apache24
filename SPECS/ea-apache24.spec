@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.66
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 5
+%define release_prefix 6
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -2133,6 +2133,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Fri Apr 24 2026 Heekyoung Park <heekyoung.park@webpros.com> - 2.4.66-6
+- EA4-260: Build for Ubuntu 26.04
+
 * Thu Mar 19 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-5
 - EA4-242: Remove exec_code_asuser self-conflict from mod_suexec
 
