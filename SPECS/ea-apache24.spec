@@ -27,9 +27,9 @@
 
 Summary: Apache HTTP Server
 Name: ea-apache24
-Version: 2.4.66
+Version: 2.4.67
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 5
+%define release_prefix 1
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -101,9 +101,6 @@ Patch801: 0018-Add-instructions-to-install-elinks.patch
 
 Patch902: 0019-Change-Accept-mutex-from-DEBUG-to-INFO-so-techs-can-.patch
 
-Patch903: 0020-fix-regression-in-77abeb39879fd13d220043641ece641108.patch
-
-Patch904: 0021-mod_http2-v2.0.37-prevent-double-free.patch
 
 License: ASL 2.0
 Group: System Environment/Daemons
@@ -1406,8 +1403,6 @@ mod_watchdog hooks.
 %endif
 
 %patch902 -p1 -b .acceptmutex
-%patch903 -p1 -b .modmdstapleothers
-%patch904 -p1 -b .http2doublefree
 
 # Patch in the vendor string and the release string
 sed -i '/^#define PLATFORM/s/Unix/%{vstring}/' os/unix/os.h
@@ -2133,6 +2128,20 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Mon May 04 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.67-1
+- EA-13423: Update ea-apache24 from v2.4.66 to v2.4.67
+	- important: Apache HTTP Server: http2: double free and possible RCE on early reset (CVE-2026-23918)
+	- moderate: Apache HTTP Server: mod_rewrite elevation of privileges via ap_expr (CVE-2026-24072)
+	- moderate: Apache HTTP Server: mod_auth_digest timing attack (CVE-2026-33006)
+	- low: Apache HTTP Server: buffer overflow in mod_proxy_ajp via ajp_msg_check_header() (CVE-2026-28780)
+	- low: Apache HTTP Server: mod_md unrestricted OCSP response (CVE-2026-29168)
+	- low: Apache HTTP Server: mod_dav_lock indirect lock crash (CVE-2026-29169)
+	- low: Apache HTTP Server: mod_authn_socache crash (CVE-2026-33007)
+	- low: Apache HTTP Server: multiple modules HTTP response splitting (CVE-2026-33523)
+	- low: Apache HTTP Server: off-by-one OOB reads in AJP getter functions (CVE-2026-33857)
+	- low: Apache HTTP Server: mod_proxy_ajp heap buffer over-read in ajp_msg_get_string (CVE-2026-34032)
+	- low: Apache HTTP Server: mod_proxy_ajp heap over-read in ajp_parse_data() (CVE-2026-34059)
+
 * Thu Mar 19 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.66-5
 - EA4-242: Remove exec_code_asuser self-conflict from mod_suexec
 
