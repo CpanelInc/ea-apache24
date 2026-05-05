@@ -300,3 +300,16 @@ cp $buildroot/NOTICE $DEB_INSTALL_ROOT/usr/share/doc/$name-tools/
 mkdir -p $DEB_INSTALL_ROOT/var/cache/apache2/ssl
 
 perl -pi -e 's{^#!/bin/sh}{#!/bin/bash}' $DEB_INSTALL_ROOT$_sbindir/apachectl
+
+# Prune .install entries for files absent from this build (handles upstream removals)
+for ifile in debian/*.install; do
+    [[ -f "$ifile" ]] || continue
+    tmpfile=$(mktemp)
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        src=$(awk '{print $1}' <<< "$line")
+        if [[ -z "$src" ]] || [[ "$src" == \#* ]] || compgen -G "$src" > /dev/null 2>&1; then
+            echo "$line" >> "$tmpfile"
+        fi
+    done < "$ifile"
+    \mv "$tmpfile" "$ifile"
+done
