@@ -44,11 +44,28 @@ export PATH="/usr/bin:$PATH"
 # forcibly prevent use of bundled apr, apr-util, pcre
 rm -rf srclib/{apr,apr-util,pcre}
 # regenerate configure scripts
+# autoconf 2.72+ requires configure.ac instead of configure.in
+[ -f configure.ac ] || cp configure.in configure.ac
 autoheader && autoconf || exit 1
 # Before configure; fix location of build dir in generated apxs
 $__perl -pi -e "s:\@exp_installbuilddir\@:$_libdir/apache2/build:g" support/apxs.in
 export CFLAGS="$RPM_OPT_FLAGS"
 export LDFLAGS="-Wl,-z,relro,-z,now"
+# Ubuntu 26.04+ removed crypt() from glibc; it is now in libxcrypt (-lcrypt).
+# htdigest in Apache's support/Makefile.in does not append $(CRYPT_LIBS) to its
+# link line (unlike htpasswd/htdbm), so patch it before configure regenerates it.
+# Also, OpenSSL on Ubuntu 26.04 pulls in libjitterentropy (static) and libzstd
+# as transitive link deps; libjitterentropy3-dev only exists on Ubuntu 26.04+.
+UBUNTU_VERSION=$(. /etc/os-release 2>/dev/null && echo "${VERSION_ID:-0}" | tr -d '.')
+SSL_STATICLIB_FLAG="--enable-ssl-staticlib-deps"
+if [[ "${UBUNTU_VERSION:-0}" -ge 2604 ]]; then
+    # Ubuntu 26.04 OpenSSL pulls in -l:libjitterentropy.a via ssl-staticlib-deps
+    # but libjitterentropy3-dev is not available in the OBS mirror; disable it.
+    SSL_STATICLIB_FLAG="--disable-ssl-staticlib-deps"
+    # libaprutil-1.so references crypt() which moved from glibc to libxcrypt on
+    # Ubuntu 26.04. Export LIBS so httpd's own (non-support/) link steps pick it up.
+    export LIBS="${LIBS} -lcrypt"
+fi
 # Hard-code path to links to avoid unnecessary builddep
 export LYNX_PATH=/usr/bin/links
 # Build the daemon
@@ -79,7 +96,7 @@ export LYNX_PATH=/usr/bin/links
     --enable-mods-shared=all \
     --enable-systemd \
     --enable-ssl --with-ssl \
-    --enable-ssl-staticlib-deps \
+    $SSL_STATICLIB_FLAG \
     --enable-http2 \
     --enable-nghttp2-staticlib-deps \
     --disable-distcache \
@@ -98,7 +115,17 @@ export LYNX_PATH=/usr/bin/links
     --disable-v4-mapped \
     --enable-brotli \
     $*
-make 
+# Ensure config.status generated all AC_CONFIG_FILES outputs (e.g. support/apachectl,
+# docs/conf/extra/*.conf). Newer autoconf may not produce them on first configure run.
+[ -f support/apachectl ] || ./config.status
+# On Ubuntu 26.04, newer libtool ignores dependency_libs in .la files, so
+# patching libaprutil-1.la doesn't help. Instead patch the generated
+# support/Makefile directly: append -lcrypt to PROGRAM_LDADD so every support
+# binary (ab, htpasswd, htdigest, etc.) explicitly links libxcrypt.
+if [[ "${UBUNTU_VERSION:-0}" -ge 2604 ]]; then
+    sed -i '/^PROGRAM_LDADD *=/ s/$/ -lcrypt/' support/Makefile
+fi
+make
 
 echo "POST MAKE"
 grep -R "suexec_log" *
