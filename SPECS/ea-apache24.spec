@@ -2128,7 +2128,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
-* Fri Apr 24 2026 Heekyoung Park <heekyoung.park@webpros.com> - 2.4.67-2
+* Fri May 04 2026 Heekyoung Park <heekyoung.park@webpros.com> - 2.4.67-2
 - EA4-260: Build for Ubuntu 26.04
 
 * Mon May 04 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.67-1
