@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.67
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 1
+%define release_prefix 2
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -2128,6 +2128,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Fri May 04 2026 Heekyoung Park <heekyoung.park@webpros.com> - 2.4.67-2
+- EA4-260: Build for Ubuntu 26.04
+
 * Mon May 04 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.67-1
 - EA-13423: Update ea-apache24 from v2.4.66 to v2.4.67
 	- important: Apache HTTP Server: http2: double free and possible RCE on early reset (CVE-2026-23918)

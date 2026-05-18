@@ -4,6 +4,8 @@
         "libcap2-bin",
         "apt-file",
         "libxml2-dev",
+        "libcrypt-dev",
+        "libzstd-dev",
         "ea-apr-util",
         "ea-apr"
     ],

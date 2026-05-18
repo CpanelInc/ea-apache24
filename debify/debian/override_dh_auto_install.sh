@@ -272,9 +272,13 @@ for f in ABOUT_APACHE README CHANGES LICENSE VERSIONING NOTICE; do
 done
 
 for fd in httpd-dav.conf httpd-default.conf httpd-languages.conf httpd-manual.conf httpd-mpm.conf httpd-multilang-errordoc.conf httpd-vhosts.conf proxy-html.conf; do
+    # AC_CONFIG_FILES generates .conf from .conf.in at configure time;
+    # fall back to .conf.in if configure did not produce .conf (e.g. on Ubuntu 26.04+)
+    [ -f $buildroot/docs/conf/extra/$fd ] || cp $buildroot/docs/conf/extra/${fd}.in $buildroot/docs/conf/extra/$fd
     cp $buildroot/docs/conf/extra/$fd $DEB_INSTALL_ROOT/usr/share/doc/ea-apache24/docs/conf/extra/$fd
 done
 
+[ -f $buildroot/docs/conf/extra/httpd-info.conf ] || cp $buildroot/docs/conf/extra/httpd-info.conf.in $buildroot/docs/conf/extra/httpd-info.conf
 cp $buildroot/docs/conf/extra/httpd-info.conf $DEB_INSTALL_ROOT/usr/share/doc/$name-mod_info/
 
 gzip $buildroot/docs/man/*
