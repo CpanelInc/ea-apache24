@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.67
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 2
+%define release_prefix 3
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -91,6 +91,7 @@ Patch403: 0014-Downgrade-loglevel-for-long-lost-pid-warnings.patch
 # cPanel Security Patches
 # removed: fixed upstream Patch500: 0016-Apply-mod_ratelimit-fix-from-trunk.patch
 Patch500: 0015-Ensure-that-Paths-configured-as-Aliases-are-exempt-f.patch
+Patch501: 0022-mod_http2-v2.0.41-CVE-2026-49975-cookie-LimitRequestFields.patch
 
 # Performance Patches
 Patch601: 0016-Optimize-finding-a-module.-ap_find_linked_module-was.patch
@@ -1394,6 +1395,7 @@ mod_watchdog hooks.
 %patch403 -p1 -b .longlostpids
 
 %patch500 -p1 -b .aliassymlink
+%patch501 -p1 -b .h2cookiebomb
 %patch601 -p1 -b .speedupmodulelookup
 
 %patch701 -p1 -b .apxsfixtopbuilddir
@@ -2128,6 +2130,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Wed Jun 03 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.67-3
+- EA-13454: Backport mod_http2 v2.0.41 fix for CVE-2026-49975 (HTTP/2 Bomb - cookie LimitRequestFields bypass)
+
 * Fri May 04 2026 Heekyoung Park <heekyoung.park@webpros.com> - 2.4.67-2
 - EA4-260: Build for Ubuntu 26.04
 
