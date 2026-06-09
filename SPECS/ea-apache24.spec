@@ -27,9 +27,9 @@
 
 Summary: Apache HTTP Server
 Name: ea-apache24
-Version: 2.4.67
+Version: 2.4.68
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 3
+%define release_prefix 1
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -91,7 +91,6 @@ Patch403: 0014-Downgrade-loglevel-for-long-lost-pid-warnings.patch
 # cPanel Security Patches
 # removed: fixed upstream Patch500: 0016-Apply-mod_ratelimit-fix-from-trunk.patch
 Patch500: 0015-Ensure-that-Paths-configured-as-Aliases-are-exempt-f.patch
-Patch501: 0022-mod_http2-v2.0.41-CVE-2026-49975-cookie-LimitRequestFields.patch
 
 # Performance Patches
 Patch601: 0016-Optimize-finding-a-module.-ap_find_linked_module-was.patch
@@ -1395,7 +1394,6 @@ mod_watchdog hooks.
 %patch403 -p1 -b .longlostpids
 
 %patch500 -p1 -b .aliassymlink
-%patch501 -p1 -b .h2cookiebomb
 %patch601 -p1 -b .speedupmodulelookup
 
 %patch701 -p1 -b .apxsfixtopbuilddir
@@ -2130,6 +2128,23 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Tue Jun 09 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.68-1
+- EA-13458: Update ea-apache24 from v2.4.67 to v2.4.68
+- Remove CVE-2026-49975 backport patch (now fixed upstream in mod_http2 2.0.42)
+	- critical: Apache HTTP Server: mod_http2 DoS via memory allocation (CVE-2026-49975)
+	- critical: Apache HTTP Server: mod_http2 memory corruption (CVE-2026-48913)
+	- high: Apache HTTP Server: heap underflow in ap_regname (CVE-2026-44631)
+	- high: Apache HTTP Server: infinite loop in mod_proxy_ftp (CVE-2026-44186)
+	- high: Apache HTTP Server: stack buffer over-read in mod_ssl OCSP (CVE-2026-44185)
+	- high: Apache HTTP Server: privilege escalation via expressions (CVE-2026-44119)
+	- moderate: Apache HTTP Server: OOB read in merge_response_headers (CVE-2026-43951)
+	- moderate: Apache HTTP Server: mod_xml2enc heap overflow (CVE-2026-42536)
+	- moderate: Apache HTTP Server: mod_dav_fs protected directory access (CVE-2026-42535)
+	- moderate: Apache HTTP Server: ProxyPassReverseCookieMap buffer overflow (CVE-2026-34356)
+	- moderate: Apache HTTP Server: mod_proxy_html buffer overflow (CVE-2026-34355)
+	- low: Apache HTTP Server: mod_proxy_ftp XSS (CVE-2026-29170)
+	- low: Apache HTTP Server: mod_ldap use-after-free (CVE-2026-29167)
+
 * Wed Jun 03 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.67-3
 - EA-13454: Backport mod_http2 v2.0.41 fix for CVE-2026-49975 (HTTP/2 Bomb - cookie LimitRequestFields bypass)
 
