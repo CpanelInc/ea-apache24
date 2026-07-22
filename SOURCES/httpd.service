@@ -1,5 +1,6 @@
 [Unit]
 Description=Apache web server managed by cPanel EasyApache
+After=network.target remote-fs.target nss-lookup.target
 ConditionPathExists=!/etc/httpddisable
 ConditionPathExists=!/etc/apachedisable
 ConditionPathExists=!/etc/httpdisable
