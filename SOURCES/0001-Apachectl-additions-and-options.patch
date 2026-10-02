@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:11:13 -0500
-Subject: [PATCH 01/20] Apachectl additions and options
+Subject: [PATCH 01/19] Apachectl additions and options
 
 ---
  support/apachectl.in | 43 ++++++++++++++++++++++++++++++++++---------

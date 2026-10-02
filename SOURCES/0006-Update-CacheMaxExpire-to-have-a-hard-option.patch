@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Thu, 12 Jul 2018 15:34:24 -0500
-Subject: [PATCH 06/20] Update CacheMaxExpire to have a "hard" option
+Subject: [PATCH 06/19] Update CacheMaxExpire to have a "hard" option
 
 ---
  modules/cache/cache_util.h |  3 +++
@@ -23,7 +23,7 @@ index 6b92151..4c42a8e 100644
  
  /* A linked-list of authn providers. */
 diff --git a/modules/cache/mod_cache.c b/modules/cache/mod_cache.c
-index 3b4469e..2d6ce95 100644
+index c69fc39..f8ffc0d 100644
 --- a/modules/cache/mod_cache.c
 +++ b/modules/cache/mod_cache.c
 @@ -1452,6 +1452,11 @@ static apr_status_t cache_save_filter(ap_filter_t *f, apr_bucket_brigade *in)
