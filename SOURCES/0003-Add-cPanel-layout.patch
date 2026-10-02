@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Cory McIntire <cory@cpanel.net>
 Date: Wed, 1 Apr 2020 11:24:22 -0500
-Subject: [PATCH 03/20] Add cPanel layout
+Subject: [PATCH 03/19] Add cPanel layout
 
 ---
  config.layout | 23 +++++++++++++++++++++++
