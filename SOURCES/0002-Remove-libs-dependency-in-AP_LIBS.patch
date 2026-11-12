@@ -8,7 +8,7 @@ Subject: [PATCH 02/19] Remove --libs dependency in AP_LIBS
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/configure.in b/configure.in
-index a4a9dba..fbd5bf2 100644
+index 7e47eb2..7570c02 100644
 --- a/configure.in
 +++ b/configure.in
 @@ -844,9 +844,9 @@ APACHE_SUBST(INSTALL_SUEXEC)
