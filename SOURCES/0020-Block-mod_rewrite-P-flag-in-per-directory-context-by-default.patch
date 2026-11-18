@@ -1,0 +1,110 @@
+From 8b2670cdfb2b2b5ca4d5e126ace83856c3a50d85 Mon Sep 17 00:00:00 2001
+From: Dan Muey <daniel.muey@webpros.com>
+Date: Tue, 18 Nov 2025 12:00:00 -0600
+Subject: [PATCH 20/20] Block mod_rewrite [P] flag in per-directory context by
+ default (AllowPerDirProxy opt-out)
+
+Case CPANEL-EA4-418: Block the mod_rewrite [P] (RULEFLAG_PROXY) flag by
+default whenever a RewriteRule is evaluated in per-directory context
+(.htaccess or <Directory>). Protection is on with no configuration: such a
+rule now fails closed with HTTP 403 Forbidden and logs a greppable
+[CPANEL-EA4-418] marker, instead of being routed through mod_proxy_fcgi.
+
+On cPanel servers the Apache worker runs as "nobody" and every per-user
+PHP-FPM pool socket is group "nobody" so the shared worker can reach it. A
+tenant whose docroot allows .htaccess overrides can write
+"RewriteRule ^(.*)$ unix:/path/to/another-pool.sock|fcgi://localhost/... [P]"
+and thereby reach another account's FPM socket. mod_rewrite's [P] flag is
+the only Apache-config surface a tenant controls that enables this, so a
+tenant's .htaccess must not be allowed to use it.
+
+The only way to re-permit per-directory [P] is the opt-out directive
+"RewriteOptions AllowPerDirProxy". It is honored ONLY from server/vhost
+scope: a server-context RewriteOptions (cmd->path==NULL) writes the server
+config, whereas an .htaccess/<Directory> RewriteOptions (cmd->path!=NULL)
+writes only the per-directory config. Enforcement reads the allow bit from
+the server config (sconf) alone, so a tenant cannot self-exempt by placing
+AllowPerDirProxy in .htaccess.
+
+Because the per-directory config cannot distinguish an .htaccess origin from
+a <Directory> origin, the opt-out necessarily applies to the whole
+vhost/server: an admin cannot opt out a single <Directory> via an Include,
+only the entire vhost/server. That is intended.
+
+Trusted server/vhost-context [P] rules are unaffected; mod_proxy's
+ProxyPass/ProxyPassMatch are a different module and are likewise unaffected.
+---
+ modules/mappers/mod_rewrite.c | 43 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
+
+diff --git a/modules/mappers/mod_rewrite.c b/modules/mappers/mod_rewrite.c
+index 62bcd38..d31909a 100644
+--- a/modules/mappers/mod_rewrite.c
++++ b/modules/mappers/mod_rewrite.c
+@@ -218,6 +218,7 @@ static const char* really_last_key = "rewrite_really_last";
+ #define OPTION_IGNORE_CONTEXT_INFO  (1<<9)
+ #define OPTION_LEGACY_PREFIX_DOCROOT (1<<10)
+ #define OPTION_UNSAFE_PREFIX_STAT   (1<<12)
++#define OPTION_ALLOW_PERDIR_PROXY   (1<<13)
+ 
+ #ifndef RAND_MAX
+ #define RAND_MAX 32767
+@@ -3239,6 +3240,9 @@ static const char *cmd_rewriteoptions(cmd_parms *cmd,
+         else if (!strcasecmp(w, "UnsafePrefixStat")) {
+             options |= OPTION_UNSAFE_PREFIX_STAT;
+         }
++        else if (!strcasecmp(w, "AllowPerDirProxy")) {
++            options |= OPTION_ALLOW_PERDIR_PROXY;
++        }
+         else {
+             return apr_pstrcat(cmd->pool, "RewriteOptions: unknown option '",
+                                w, "'", NULL);
+@@ -4570,6 +4574,45 @@ static rule_return_type apply_rewrite_rule(rewriterule_entry *p,
+      * ourself).
+      */
+     if (p->flags & RULEFLAG_PROXY) {
++        /* The [P] proxy flag is blocked by default when a RewriteRule is
++         * evaluated in per-directory context (.htaccess or <Directory>), with
++         * no configuration required: absence of any option means protection is
++         * ON. On multi-tenant servers such a rule is a privilege-escalation
++         * vector (a tenant proxying to another account's backend/socket), so we
++         * fail closed with 403 rather than silently falling through.
++         *
++         * The only way to re-permit it is the opt-out directive
++         * 'RewriteOptions AllowPerDirProxy'. That opt-out is honored ONLY from
++         * server/vhost scope: a server-context RewriteOptions (cmd->path==NULL)
++         * writes the server config, whereas an .htaccess/<Directory>
++         * RewriteOptions (cmd->path!=NULL) writes only the per-directory
++         * config. We therefore consult the server config (sconf) ONLY, so a
++         * tenant cannot self-exempt by placing AllowPerDirProxy in .htaccess.
++         *
++         * Because the per-directory config cannot distinguish an .htaccess
++         * origin from a <Directory> origin, the opt-out necessarily applies to
++         * the whole vhost/server: an admin cannot opt out a single <Directory>
++         * via an Include, only the entire vhost/server. That is intended.
++         *
++         * Trusted server/vhost-context [P] rules (ctx->perdir == NULL) are left
++         * untouched. */
++        if (ctx->perdir != NULL) {
++            rewrite_server_conf *sconf = ap_get_module_config(
++                                             r->server->module_config,
++                                             &rewrite_module);
++
++            if (!(sconf->options & OPTION_ALLOW_PERDIR_PROXY)) {
++                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
++                              "[CPANEL-EA4-418] mod_rewrite: proxy [P] flag is "
++                              "not permitted in per-directory context "
++                              "(.htaccess/<Directory>); set 'RewriteOptions "
++                              "AllowPerDirProxy' in server/vhost config to allow "
++                              "it. Returning 403 for '%s'", r->filename);
++                r->status = HTTP_FORBIDDEN;
++                return RULE_RC_STATUS_SET;
++            }
++        }
++
+         fully_qualify_uri(r);
+ 
+         rewritelog(r, 2, ctx->perdir, "forcing proxy-throughput with %s",
+-- 
+2.56.0
+
