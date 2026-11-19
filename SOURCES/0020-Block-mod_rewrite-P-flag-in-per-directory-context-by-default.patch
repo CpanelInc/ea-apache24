@@ -1,22 +1,29 @@
 From 8b2670cdfb2b2b5ca4d5e126ace83856c3a50d85 Mon Sep 17 00:00:00 2001
 From: Dan Muey <daniel.muey@webpros.com>
-Date: Tue, 18 Nov 2025 12:00:00 -0600
+Date: Wed, 18 Nov 2026 12:00:00 -0600
 Subject: [PATCH 20/20] Block mod_rewrite [P] flag in per-directory context by
  default (AllowPerDirProxy opt-out)
 
-Case CPANEL-EA4-418: Block the mod_rewrite [P] (RULEFLAG_PROXY) flag by
+Case EA4-418: Block the mod_rewrite [P] (RULEFLAG_PROXY) flag by
 default whenever a RewriteRule is evaluated in per-directory context
 (.htaccess or <Directory>). Protection is on with no configuration: such a
 rule now fails closed with HTTP 403 Forbidden and logs a greppable
-[CPANEL-EA4-418] marker, instead of being routed through mod_proxy_fcgi.
+[EA4-418] marker, instead of being routed through mod_proxy_fcgi.
 
 On cPanel servers the Apache worker runs as "nobody" and every per-user
 PHP-FPM pool socket is group "nobody" so the shared worker can reach it. A
 tenant whose docroot allows .htaccess overrides can write
 "RewriteRule ^(.*)$ unix:/path/to/another-pool.sock|fcgi://localhost/... [P]"
-and thereby reach another account's FPM socket. mod_rewrite's [P] flag is
-the only Apache-config surface a tenant controls that enables this, so a
-tenant's .htaccess must not be allowed to use it.
+and thereby reach another account's FPM socket. This patch blocks that
+mod_rewrite [P] entry point in per-directory context so a tenant's
+.htaccess cannot use it.
+
+Note: mod_rewrite [P] is one of several tenant-controlled paths to a
+shared worker's pool sockets - SetHandler "proxy:unix:..." set from
+.htaccess and RewriteRule [H=proxy:] bypass mod_rewrite and are NOT
+covered here. Defense against cross-account access therefore also requires
+the FPM-side denylist (EA4-421). This patch narrows one vector; EA4-421
+closes the rest.
 
 The only way to re-permit per-directory [P] is the opt-out directive
 "RewriteOptions AllowPerDirProxy". It is honored ONLY from server/vhost
@@ -91,8 +98,8 @@ index 62bcd38..d31909a 100644
 +                                             &rewrite_module);
 +
 +            if (!(sconf->options & OPTION_ALLOW_PERDIR_PROXY)) {
-+                ap_log_rerror(APLOG_MARK, APLOG_ERR, 0, r,
-+                              "[CPANEL-EA4-418] mod_rewrite: proxy [P] flag is "
++                ap_log_rerror(APLOG_MARK, APLOG_NOTICE, 0, r,
++                              "[EA4-418] mod_rewrite: proxy [P] flag is "
 +                              "not permitted in per-directory context "
 +                              "(.htaccess/<Directory>); set 'RewriteOptions "
 +                              "AllowPerDirProxy' in server/vhost config to allow "
