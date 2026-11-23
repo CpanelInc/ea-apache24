@@ -29,7 +29,7 @@ Summary: Apache HTTP Server
 Name: ea-apache24
 Version: 2.4.71
 # Doing release_prefix this way for Release allows for OBS-proof versioning, See EA-4544 for more details
-%define release_prefix 1
+%define release_prefix 2
 Release: %{release_prefix}%{?dist}.cpanel
 Vendor: cPanel, Inc.
 URL: http://httpd.apache.org/
@@ -91,6 +91,7 @@ Patch403: 0014-Downgrade-loglevel-for-long-lost-pid-warnings.patch
 # cPanel Security Patches
 # removed: fixed upstream Patch500: 0016-Apply-mod_ratelimit-fix-from-trunk.patch
 Patch500: 0015-Ensure-that-Paths-configured-as-Aliases-are-exempt-f.patch
+Patch501: 0020-Block-mod_rewrite-P-flag-in-per-directory-context-by-default.patch
 
 # Performance Patches
 Patch601: 0016-Optimize-finding-a-module.-ap_find_linked_module-was.patch
@@ -1394,6 +1395,7 @@ mod_watchdog hooks.
 %patch403 -p1 -b .longlostpids
 
 %patch500 -p1 -b .aliassymlink
+%patch501 -p1 -b .perdirproxy
 %patch601 -p1 -b .speedupmodulelookup
 
 %patch701 -p1 -b .apxsfixtopbuilddir
@@ -2128,6 +2130,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_sysconfdir}/rpm/macros.apache2
 
 %changelog
+* Wed Nov 18 2026 Dan Muey <daniel.muey@webpros.com> - 2.4.71-2
+- EA4-418: Block [P] in per-directory context (.htaccess and <Directory>)
+
 * Wed Nov 11 2026 Cory McIntire <cory.mcintire@webpros.com> - 2.4.71-1
 - EA-13650: Update ea-apache24 from v2.4.70 to v2.4.71 (CVE-2026-119618, CVE-2026-109163)
 
